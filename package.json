@@ -23,7 +23,6 @@
     "react-jazzicon": "^1.0.4",
     "react-moralis": "^1.4.2",
     "wagmi": "0.6.8",
-    "web3": "^1.8.0",
     "web3uikit": "^1.0.4"
   },
   "devDependencies": {
