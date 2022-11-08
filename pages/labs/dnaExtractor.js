@@ -25,9 +25,10 @@ const DnaExtractor = () => {
 	const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 	const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 
+	const provider = new ethers.providers.Web3Provider(window.ethereum)
+
 	useEffect(() => {
 		;(async () => {
-			let provider = new ethers.providers.Web3Provider(window.ethereum)
 			await provider.send("eth_requestAccounts", [])
 			let signer = provider.getSigner()
 			setSignerAddress(await signer.getAddress())
@@ -164,7 +165,11 @@ const DnaExtractor = () => {
 								</div>
 								<div className={openTab === 2 ? "block" : "hidden"} id="link2">
 									{/* Should be signerAddress here. Ray: 0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8 d4rk: 0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d*/}
-									<Staking contracts={contracts} signerAddress={"0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"} />{" "}
+									<Staking
+										provider={provider}
+										contracts={contracts}
+										signerAddress={"0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"}
+									/>
 								</div>
 							</div>
 						</div>
