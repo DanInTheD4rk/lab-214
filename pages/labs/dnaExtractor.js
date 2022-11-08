@@ -163,7 +163,7 @@ const DnaExtractor = () => {
 									</p>
 								</div>
 								<div className={openTab === 2 ? "block" : "hidden"} id="link2">
-									{/* Should be signerAddress here. Ray: 0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8*/}
+									{/* Should be signerAddress here. Ray: 0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8 d4rk: 0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d*/}
 									<Staking contracts={contracts} signerAddress={"0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"} />{" "}
 								</div>
 							</div>

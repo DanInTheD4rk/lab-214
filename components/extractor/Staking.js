@@ -102,7 +102,7 @@ const Staking = (props) => {
 			// prettier-ignore
 			let tierColor = mutant.tier === 6 
 				? "bg-green-700"
-				: [5, 4, 3].includes(nft.tier)
+				: [5, 4, 3].includes(mutant.tier)
 					? "bg-yellow-700"
 					: "bg-red-700"
 			mutantTiles.push(
@@ -112,11 +112,12 @@ const Staking = (props) => {
 							<button
 								type="button"
 								className={`${styles.tierButton + " " + tierColor} opacity-80 font-bold mb-2`}
-								onClick={() => console.log("staked!")}
+								onClick={() => console.log("updated!")}
 							>
-								<div className={"px-6 py-2.5 relative"}>
-									Tier: {MUTANT_TIERS[mutant.tier]}
-									<p className="px-6 py-2.5 rounded absolute inset-0 opacity-0 hover:opacity-100 hover:bg-gray-400 z-11 text-white font-bold">
+								<div className={"px-1.5 py-1.5 relative"}>
+									<span className="font-bold text-lg mr-2">{mutant.id}</span>{" "}
+									<span className="italic">Tier: {MUTANT_TIERS[mutant.tier]}</span>
+									<p className="px-6 py-3 rounded absolute inset-0 opacity-0 hover:opacity-100 hover:bg-gray-400 z-11 text-white font-bold">
 										Update
 									</p>
 								</div>
