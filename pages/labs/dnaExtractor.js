@@ -5,7 +5,9 @@ import { ethers } from "ethers"
 import { Network, Alchemy } from "alchemy-sdk"
 import { alchemy } from "../../utils/Alchemy"
 import Staking from "../../components/extractor/Staking"
+import Extraction from "../../components/extractor/Extraction"
 import Toast from "../../components/Toast"
+import { useContract, useSigner } from "wagmi"
 
 const styles = {
 	button:
@@ -19,7 +21,10 @@ const DnaExtractor = () => {
 
 	const [contracts, setContracts] = useState(null)
 	const [signerAddress, setSignerAddress] = useState(null)
+	const [provider, setProvider] = useState()
 	const [ownedMutants, setOwnedMutants] = useState([])
+
+	const { data: signer, isError, isLoading } = useSigner()
 
 	const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 	const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
@@ -27,11 +32,12 @@ const DnaExtractor = () => {
 
 	useEffect(() => {
 		;(async () => {
-			let provider = new ethers.providers.Web3Provider(window.ethereum)
-			await provider.send("eth_requestAccounts", [])
-			let signer = provider.getSigner()
+			const newProvider = new ethers.providers.Web3Provider(window.ethereum)
+			setProvider(newProvider)
+			await newProvider.send("eth_requestAccounts", [])
+			let signer = newProvider.getSigner()
 			setSignerAddress(await signer.getAddress())
-			console.log(provider)
+			console.log(newProvider)
 			console.log(signer)
 			console.log(signerAddress)
 			// setContract(new ethers.Contract("0xa513e6e4b8f2a923d98304ec87f64353c4d5c853", abis.mutant, signer))
@@ -90,7 +96,7 @@ const DnaExtractor = () => {
 						},
 						body: JSON.stringify(mutantIds),
 					})
-						.then((res) => res.json())
+						.then((resp) => resp.json())
 						.then((data) => {
 							// enter you logic when the fetch is successful
 							console.log(data)
@@ -155,16 +161,10 @@ const DnaExtractor = () => {
 						<div className="px-4 py-5 flex-auto">
 							<div className="tab-content tab-space">
 								<div className={openTab === 1 ? "block" : "hidden"} id="link1">
-									<p>
-										Collaboratively administrate empowered markets via plug-and-play networks. Dynamically procrastinate
-										B2C users after installed base benefits.
-										<br />
-										<br /> Dramatically visualize customer directed convergence without revolutionary ROI.
-									</p>
+									<Extraction />
 								</div>
 								<div className={openTab === 2 ? "block" : "hidden"} id="link2">
-									{/* Should be signerAddress here. Ray: 0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8*/}
-									<Staking contracts={contracts} signerAddress={"0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"} />{" "}
+									{!isLoading && <Staking />}
 								</div>
 							</div>
 						</div>
