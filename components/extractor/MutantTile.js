@@ -1,15 +1,15 @@
-import { useRef } from "react"
+import { useState, useRef } from "react"
 import PropTypes from "prop-types"
 import failedExperiment from "../../public/failedExperiment.gif"
 import abisMainnet from "../../constants/abisMainnet"
 import { ethers } from "ethers"
-import { useSigner } from "wagmi"
+import { ConnectorAlreadyConnectedError, useSigner } from "wagmi"
 
 const styles = {
 	button:
 		"px-6 py-2.5 bg-gray-600 text-white font-medium text-xs font-bold leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg active:bg-gray-700 active:shadow-lg transition duration-150 ease-in-out",
 	tierButton:
-		"w-full hover:bg-gray-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg active:bg-gray-700 active:shadow-lg transition duration-150 ease-in-out",
+		"w-full text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg active:bg-gray-700 active:shadow-lg transition duration-150 ease-in-out",
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
@@ -37,6 +37,7 @@ const getTierColor = (tier) => {
 
 const MutantTile = (props) => {
 	const mutant = props.mutant
+	const [canExtract, setCanExtract] = useState(props.mutant.canExtract)
 	let tierColor = getTierColor(mutant.tier)
 	const tierRef = useRef(null)
 	const tierButtonRef = useRef(null)
@@ -57,12 +58,14 @@ const MutantTile = (props) => {
 		}
 
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abisMainnet.dna, signer)
+		const isCooledDown = await dnaContract.isCooledDown(mutant.id)
 		await dnaContract
 			.mutantInfo(mutant.id)
 			.then((mutantInfo) => {
-				mutant.tier = mutantInfo.tier
-				mutant.canStake = !(mutantInfo.coolDownStarted || mutantInfo.extractionOngoing)
-				return mutant
+				const updateMutant = mutant
+				updateMutant.tier = mutantInfo.tier
+				updateMutant.canExtract = isCooledDown && !mutantInfo.extractionOngoing
+				return updateMutant
 			})
 			.then((mutantToUpdate) => {
 				fetch(BASE_URL + "/mutant/update/id/" + mutant.id, {
@@ -80,6 +83,7 @@ const MutantTile = (props) => {
 							tierButtonRef.current.className = `${
 								styles.tierButton + " " + getTierColor(mutantData.tier)
 							} opacity-80 font-bold mb-2`
+							setCanExtract(mutant.canExtract)
 						}
 					})
 					.catch((error) => {
@@ -111,7 +115,10 @@ const MutantTile = (props) => {
 							<span ref={tierRef} className="italic">
 								Tier: {MUTANT_TIERS[mutant.tier]}
 							</span>
-							<p className="px-6 py-3 rounded absolute inset-0 opacity-0 hover:opacity-100 hover:bg-gray-400 z-11 text-white font-bold">
+							<p
+								className={`px-6 py-3 rounded absolute inset-0 opacity-0 hover:opacity-100 hover:bg-gray-500 z-11 text-white font-bold 
+								${signer ? "" : `hover:opacity-0 hover:${tierColor} active:${tierColor}`}`}
+							>
 								Update
 							</p>
 						</div>
@@ -124,9 +131,9 @@ const MutantTile = (props) => {
 					alt="failed experiment"
 				/>
 				<button
-					disabled={!signer}
+					disabled={!signer || (props.action.type === "Extract" && !canExtract)}
 					type="button"
-					className={`${styles.button} w-full`}
+					className={`${styles.button} w-full disabled:opacity-50`}
 					onClick={() => props.action.func()}
 				>
 					{props.action.type}
