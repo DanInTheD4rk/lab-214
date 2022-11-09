@@ -11,7 +11,7 @@ const styles = {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
-const Extraction = (props) => {
+const Extraction = () => {
 	const [mutantTiles, setMutantTiles] = useState(null)
 
 	useEffect(() => {
@@ -23,10 +23,11 @@ const Extraction = (props) => {
 					tiles[mutant.id] = (
 						<MutantTile
 							key={mutant.id}
-							provider={props.provider}
-							signerAddress={props.signerAddress}
-							contracts={props.contracts}
 							mutant={mutant}
+							action={{
+								type: "Extract",
+								func: () => console.log("Extracted!!"),
+							}}
 						/>
 					)
 				})
@@ -46,9 +47,3 @@ const Extraction = (props) => {
 }
 
 export default Extraction
-
-Extraction.propTypes = {
-	signerAddress: PropTypes.string,
-	provider: PropTypes.object,
-	contracts: PropTypes.object,
-}

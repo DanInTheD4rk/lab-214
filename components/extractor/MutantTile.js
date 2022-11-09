@@ -1,6 +1,9 @@
-import { useEffect, useState, useRef } from "react"
+import { useRef } from "react"
 import PropTypes from "prop-types"
 import failedExperiment from "../../public/failedExperiment.gif"
+import abisMainnet from "../../constants/abisMainnet"
+import { ethers } from "ethers"
+import { useSigner } from "wagmi"
 
 const styles = {
 	button:
@@ -11,6 +14,7 @@ const styles = {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
+const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 
 const MUTANT_TIERS = {
 	0: "F",
@@ -32,22 +36,17 @@ const getTierColor = (tier) => {
 }
 
 const MutantTile = (props) => {
-	const [dnaContract, setDnaContract] = useState(null)
 	const mutant = props.mutant
 	let tierColor = getTierColor(mutant.tier)
 	const tierRef = useRef(null)
 	const tierButtonRef = useRef(null)
 	const imgRef = useRef(null)
-
-	// useEffect(() => {
-	// 	if (props.contracts && props.contracts.dna) {
-	// 		setDnaContract(props.contracts.dna)
-	// 	}
-	// }, [props.contracts])
+	const { data: signer } = useSigner()
 
 	const updateMutant = async () => {
 		if (!mutant.imageUrl) {
-			await props.contracts.mutant
+			const mutantContract = new ethers.Contract(MUTANT_CONTRACT, abisMainnet.mutant, signer)
+			await mutantContract
 				.tokenURI(mutant.id)
 				.then(fetch)
 				.then((resp) => resp.json())
@@ -57,7 +56,8 @@ const MutantTile = (props) => {
 				})
 		}
 
-		await props.contracts.dna
+		const dnaContract = new ethers.Contract(DNA_CONTRACT, abisMainnet.dna, signer)
+		await dnaContract
 			.mutantInfo(mutant.id)
 			.then((mutantInfo) => {
 				mutant.tier = mutantInfo.tier
@@ -100,6 +100,7 @@ const MutantTile = (props) => {
 			<div className="w-32 m-2">
 				<div className="w-full flex justify-center items-center">
 					<button
+						disabled={!signer}
 						ref={tierButtonRef}
 						type="button"
 						className={`${styles.tierButton + " " + tierColor} opacity-80 font-bold mb-2`}
@@ -122,8 +123,13 @@ const MutantTile = (props) => {
 					className="rounded-lg w-full mb-2"
 					alt="failed experiment"
 				/>
-				<button type="button" className={`${styles.button} w-full`} onClick={() => console.log("staked!")}>
-					Stake
+				<button
+					disabled={!signer}
+					type="button"
+					className={`${styles.button} w-full`}
+					onClick={() => props.action.func()}
+				>
+					{props.action.type}
 				</button>
 			</div>
 		</div>
@@ -133,8 +139,6 @@ const MutantTile = (props) => {
 export default MutantTile
 
 MutantTile.propTypes = {
-	signerAddress: PropTypes.string,
-	provider: PropTypes.object,
-	contracts: PropTypes.object,
 	mutant: PropTypes.object,
+	action: PropTypes.object,
 }

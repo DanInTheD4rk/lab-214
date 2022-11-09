@@ -7,6 +7,7 @@ import { alchemy } from "../../utils/Alchemy"
 import Staking from "../../components/extractor/Staking"
 import Extraction from "../../components/extractor/Extraction"
 import Toast from "../../components/Toast"
+import { useContract, useSigner } from "wagmi"
 
 const styles = {
 	button:
@@ -22,6 +23,8 @@ const DnaExtractor = () => {
 	const [signerAddress, setSignerAddress] = useState(null)
 	const [provider, setProvider] = useState()
 	const [ownedMutants, setOwnedMutants] = useState([])
+
+	const { data: signer, isError, isLoading } = useSigner()
 
 	const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 	const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
@@ -158,24 +161,10 @@ const DnaExtractor = () => {
 						<div className="px-4 py-5 flex-auto">
 							<div className="tab-content tab-space">
 								<div className={openTab === 1 ? "block" : "hidden"} id="link1">
-									{/* Should be signerAddress here. Ray: 0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8 d4rk: 0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d*/}
-									{contracts && provider && (
-										<Extraction
-											provider={provider}
-											contracts={contracts}
-											signerAddress={"0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"}
-										/>
-									)}
+									<Extraction />
 								</div>
 								<div className={openTab === 2 ? "block" : "hidden"} id="link2">
-									{/* Should be signerAddress here. Ray: 0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8 d4rk: 0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d*/}
-									{contracts && provider && (
-										<Staking
-											provider={provider}
-											contracts={contracts}
-											signerAddress={"0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"}
-										/>
-									)}
+									{!isLoading && <Staking />}
 								</div>
 							</div>
 						</div>

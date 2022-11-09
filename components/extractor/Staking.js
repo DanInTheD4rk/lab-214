@@ -2,11 +2,9 @@ import { useEffect, useState, useRef } from "react"
 import abis from "../../constants/abis"
 import abisMainnet from "../../constants/abisMainnet"
 import { ethers } from "ethers"
-import { Network, Alchemy } from "alchemy-sdk"
 import { alchemy } from "../../utils/Alchemy"
-import PropTypes from "prop-types"
-import { Testnet } from "web3uikit"
 import MutantTile from "./MutantTile"
+import { useSigner } from "wagmi"
 
 const styles = {
 	button:
@@ -17,16 +15,24 @@ const styles = {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
+const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 
-const Staking = (props) => {
+const Staking = () => {
 	const [mutantTiles, setMutantTiles] = useState(null)
 	const [serverMutants, setServerMutants] = useState([])
+	/* 
+		Ray: 0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8 
+		d4rk: 0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d
+	*/
+	const signerAddress = "0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"
+	const { data: signer, isError, isLoading } = useSigner() //signer._address
 
 	useEffect(() => {
-		if (props.contracts && props.contracts.dna) {
+		if (!isLoading && signer) {
+			const mutantContract = new ethers.Contract(DNA_CONTRACT, abisMainnet.dna, signer)
 			;(async () => {
 				alchemy.nft
-					.getNftsForOwner(props.signerAddress, {
+					.getNftsForOwner(signerAddress, {
 						contractAddresses: [MUTANT_CONTRACT],
 					})
 					.then((nfts) => {
@@ -36,13 +42,13 @@ const Staking = (props) => {
 								return {
 									id: nft.rawMetadata.tokenId,
 									imageUrl: nft.rawMetadata.image,
-									ownerAddress: props.signerAddress,
+									ownerAddress: signerAddress,
 								}
 							})
 						)
 					})
 					.then((mutants) => {
-						fetch(BASE_URL + "/mutant/update/address/" + props.signerAddress, {
+						fetch(BASE_URL + "/mutant/update/address/" + signerAddress, {
 							method: "POST",
 							headers: {
 								"Content-Type": "application/json",
@@ -55,14 +61,14 @@ const Staking = (props) => {
 									serverMutants
 										.filter((mutant) => mutant.tier === null)
 										.map(async (mutant) => {
-											return await props.contracts.dna.mutantInfo(mutant.id).then((mutantInfo) => {
+											return await mutantContract.mutantInfo(mutant.id).then((mutantInfo) => {
 												mutant.tier = mutantInfo.tier
 												mutant.canStake = !(mutantInfo.coolDownStarted || mutantInfo.extractionOngoing)
 												return mutant
 											})
 										})
 								).then((mutantsToUpdate) => {
-									fetch(BASE_URL + "/mutant/update/address/" + props.signerAddress, {
+									fetch(BASE_URL + "/mutant/update/address/" + signerAddress, {
 										method: "POST",
 										headers: {
 											"Content-Type": "application/json",
@@ -84,50 +90,50 @@ const Staking = (props) => {
 					})
 			})()
 		}
-	}, [props.contracts])
+	}, [isLoading, signer])
 
 	useEffect(() => {
 		const tiles = {}
-		console.log(serverMutants)
-		console.log(props.contracts)
 		serverMutants.forEach((mutant) => {
 			tiles[mutant.id] = (
 				<MutantTile
 					key={mutant.id}
-					provider={props.provider}
-					signerAddress={props.signerAddress}
-					contracts={props.contracts}
 					mutant={mutant}
+					action={{
+						type: "Stake",
+						func: () => console.log("Staked!!"),
+					}}
 				/>
 			)
 		})
 		setMutantTiles(tiles)
 	}, [serverMutants])
 
-	return (
-		<div>
-			<div className="flex flex-row justify-center mb-3">
-				<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("staked!")}>
-					Stake All
-				</button>
-				<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("staked!")}>
-					Stake Selected
-				</button>
-				<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("unstaked!")}>
-					Unstake All
-				</button>
-				<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("unstaked!")}>
-					Unstake Selected
-				</button>
+	if (signer) {
+		return (
+			<div>
+				<div className="flex flex-row justify-center mb-3">
+					<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("staked!")}>
+						Stake All
+					</button>
+					<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("staked!")}>
+						Stake Selected
+					</button>
+					<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("unstaked!")}>
+						Unstake All
+					</button>
+					<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("unstaked!")}>
+						Unstake Selected
+					</button>
+				</div>
+				<div className="flex flex-row flex-wrap justify-center">{mutantTiles && [...Object.values(mutantTiles)]}</div>
 			</div>
-			<div className="flex flex-row flex-wrap justify-center">{mutantTiles && [...Object.values(mutantTiles)]}</div>
-		</div>
-	)
+		)
+	} else if (isError) {
+		return <div className="flex flex-row flex-wrap justify-center text-xl">Unable to retrieve wallet info</div>
+	} else {
+		return <div className="flex flex-row flex-wrap justify-center text-xl">Connect wallet to stake mutants</div>
+	}
 }
 
 export default Staking
-
-Staking.propTypes = {
-	signerAddress: PropTypes.string,
-	contracts: PropTypes.object,
-}
