@@ -6,6 +6,7 @@ import { alchemy } from "../../utils/Alchemy"
 import MutantTile from "./MutantTile"
 import { useSigner, useContractEvent } from "wagmi"
 import { ACTION_TYPES } from "../../constants/extractor"
+import { checkIfZeroAddress } from "../../utils/utils"
 
 const styles = {
 	button:
@@ -29,14 +30,15 @@ const Staking = () => {
 	const { data: signer, isError, isLoading } = useSigner() //signer._address
 	const signerAddress = signer._address
 
-	const abi = [...abis.mutant]
-
 	useContractEvent({
 		addressOrName: MUTANT_CONTRACT,
-		contractInterface: abi,
+		contractInterface: abis.mutant,
 		eventName: "Approval",
-		listener(node, label, owner) {
-			console.log(node, label, owner)
+		listener([ownerAddress, approvedAddress, tokenId]) {
+			if (ownerAddress === signer._address && !checkIfZeroAddress(approvedAddress)) {
+				const stakingContract = new ethers.Contract(approvedAddress, abis.extractorLab, signer)
+				stakingContract.stakeMutant(tokenId.toString())
+			}
 		},
 	})
 
@@ -95,16 +97,19 @@ const Staking = () => {
 		const tiles = {}
 		console.log(serverMutants)
 		serverMutants.forEach((mutant) => {
-			const splitAddress = mutant.labAddress.split("")
-			const unique = new Set(splitAddress)
 			// prettier-ignore
-			const type = unique.size < 3 
+			const type = checkIfZeroAddress(mutant.labAddress)
 				? ACTION_TYPES[1] // Create Lab
 				: mutant.isStaked
 					? ACTION_TYPES[3] // Unstake
 					: ACTION_TYPES[2] // Stake
 
-			const func = type === ACTION_TYPES[1] ? createLab : ACTION_TYPES[3] ? unstakeMutant : stakeMutant
+			// prettier-ignore
+			const func = type === ACTION_TYPES[1] 
+				? createLab 
+				: type === ACTION_TYPES[3] 
+					? unstakeMutant 
+					: stakeMutant
 
 			tiles[mutant.tokenId] = (
 				<MutantTile
@@ -133,9 +138,7 @@ const Staking = () => {
 
 		console.log("address: " + stakingAddress)
 		console.log("owner: " + owner)
-		await mutantContract.approve(stakingAddress, mutant.tokenId) //approve event to catch then do below?
-		// const stakingContract = new ethers.Contract(stakingAddress, abis.extractorLab, signer)
-		// stakingContract.stakeMutant(mutant.tokenId)
+		await mutantContract.approve(stakingAddress, mutant.tokenId)
 	}
 
 	const unstakeMutant = async (mutant) => {
