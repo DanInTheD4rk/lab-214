@@ -1,10 +1,12 @@
 import { useEffect, useState, useRef } from "react"
-import abis from "../../constants/abis"
+import abis from "../../constants/abisGoerli"
 import abisMainnet from "../../constants/abisMainnet"
 import { ethers } from "ethers"
 import { alchemy } from "../../utils/Alchemy"
 import MutantTile from "./MutantTile"
-import { useSigner } from "wagmi"
+import { useSigner, useContractEvent } from "wagmi"
+import { ACTION_TYPES } from "../../constants/extractor"
+import { checkIfZeroAddress } from "../../utils/utils"
 
 const styles = {
 	button:
@@ -13,9 +15,9 @@ const styles = {
 		"w-full hover:bg-gray-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg active:bg-gray-700 active:shadow-lg transition duration-150 ease-in-out",
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
+const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 
 const Staking = () => {
 	const [mutantTiles, setMutantTiles] = useState(null)
@@ -24,65 +26,64 @@ const Staking = () => {
 		Ray: 0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8 
 		d4rk: 0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d
 	*/
-	const signerAddress = "0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"
+	// const signerAddress = "0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"
 	const { data: signer, isError, isLoading } = useSigner() //signer._address
+	const signerAddress = signer._address
+
+	useContractEvent({
+		addressOrName: MUTANT_CONTRACT,
+		contractInterface: abis.mutant,
+		eventName: "Approval",
+		listener([ownerAddress, approvedAddress, tokenId]) {
+			if (ownerAddress === signer._address && !checkIfZeroAddress(approvedAddress)) {
+				const stakingContract = new ethers.Contract(approvedAddress, abis.extractorLab, signer)
+				stakingContract.stakeMutant(tokenId.toString())
+			}
+		},
+	})
 
 	useEffect(() => {
 		if (!isLoading && signer) {
-			const mutantContract = new ethers.Contract(DNA_CONTRACT, abisMainnet.dna, signer)
+			const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
+			const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
+
 			;(async () => {
+				const ownedStakedMutants = []
+				const labMutantIds = await factoryContract.getMutantIds()
+				labMutantIds.forEach((labMutantId) => {
+					factoryContract.mutantToLab(labMutantId).then(async (labAddress) => {
+						const stakeContract = new ethers.Contract(labAddress, abis.extractorLab, signer)
+						const contractMutantOwner = await stakeContract.getMutantOwner()
+						if (contractMutantOwner === signer._address) {
+							const ownedStakedMutant = {
+								tokenId: labMutantId.toString(),
+								labAddress: labAddress,
+								isStaked: true,
+							}
+							ownedStakedMutants.push(ownedStakedMutant)
+						}
+					})
+				})
+
 				alchemy.nft
 					.getNftsForOwner(signerAddress, {
 						contractAddresses: [MUTANT_CONTRACT],
 					})
 					.then((nfts) => {
-						return (
-							nfts.ownedNfts &&
-							nfts.ownedNfts.map((nft) => {
-								return {
-									id: nft.rawMetadata.tokenId,
-									imageUrl: nft.rawMetadata.image,
-									ownerAddress: signerAddress,
-								}
-							})
-						)
-					})
-					.then((mutants) => {
-						fetch(BASE_URL + "/mutant/update/address/" + signerAddress, {
-							method: "POST",
-							headers: {
-								"Content-Type": "application/json",
-							},
-							body: JSON.stringify(mutants),
-						})
-							.then((resp) => resp.json())
-							.then((serverMutants) => {
-								Promise.all(
-									serverMutants
-										.filter((mutant) => mutant.tier === null)
-										.map(async (mutant) => {
-											return await mutantContract.mutantInfo(mutant.id).then((mutantInfo) => {
-												mutant.tier = mutantInfo.tier
-												mutant.canStake = !(mutantInfo.coolDownStarted || mutantInfo.extractionOngoing)
-												return mutant
-											})
-										})
-								).then((mutantsToUpdate) => {
-									fetch(BASE_URL + "/mutant/update/address/" + signerAddress, {
-										method: "POST",
-										headers: {
-											"Content-Type": "application/json",
-										},
-										body: JSON.stringify(mutantsToUpdate),
-									})
-										.then((resp) => resp.json())
-										.then(setServerMutants)
-										.catch((error) => {
-											// enter your logic for when there is an error (ex. error toast)
-											console.log(error)
-										})
+						const ownedMutants = nfts.ownedNfts.concat(ownedStakedMutants)
+						console.log(ownedMutants)
+						Promise.all(
+							ownedMutants.map(async (mutant) => {
+								const labAddress = await factoryContract.mutantToLab(mutant.tokenId)
+								return await dnaContract.mutantInfo(mutant.tokenId).then((mutantInfo) => {
+									mutant.tier = mutantInfo.tier
+									mutant.canStake = !(mutantInfo.coolDownStarted || mutantInfo.extractionOngoing)
+									mutant.labAddress = labAddress
+									return mutant
 								})
 							})
+						)
+							.then(setServerMutants)
 							.catch((error) => {
 								// enter your logic for when there is an error (ex. error toast)
 								console.log(error)
@@ -94,20 +95,56 @@ const Staking = () => {
 
 	useEffect(() => {
 		const tiles = {}
+		console.log(serverMutants)
 		serverMutants.forEach((mutant) => {
-			tiles[mutant.id] = (
+			// prettier-ignore
+			const type = checkIfZeroAddress(mutant.labAddress)
+				? ACTION_TYPES[1] // Create Lab
+				: mutant.isStaked
+					? ACTION_TYPES[3] // Unstake
+					: ACTION_TYPES[2] // Stake
+
+			// prettier-ignore
+			const func = type === ACTION_TYPES[1] 
+				? createLab 
+				: type === ACTION_TYPES[3] 
+					? unstakeMutant 
+					: stakeMutant
+
+			tiles[mutant.tokenId] = (
 				<MutantTile
-					key={mutant.id}
+					key={mutant.tokenId}
 					mutant={mutant}
 					action={{
-						type: "Stake",
-						func: () => console.log("Staked!!"),
+						type: type,
+						func: func,
 					}}
 				/>
 			)
 		})
 		setMutantTiles(tiles)
 	}, [serverMutants])
+
+	const createLab = async (mutant) => {
+		const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
+		await factoryContract.createLab(mutant.tokenId)
+	}
+
+	const stakeMutant = async (mutant) => {
+		const mutantContract = new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer)
+		const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
+		const stakingAddress = await factoryContract.mutantToLab(mutant.tokenId)
+		const owner = await mutantContract.ownerOf(mutant.tokenId)
+
+		console.log("address: " + stakingAddress)
+		console.log("owner: " + owner)
+		await mutantContract.approve(stakingAddress, mutant.tokenId)
+	}
+
+	const unstakeMutant = async (mutant) => {
+		const stakingContract = new ethers.Contract(mutant.labAddress, abis.extractorLab, signer)
+		stakingContract.unstakeMutant(mutant.tokenId)
+	}
 
 	if (signer) {
 		return (
