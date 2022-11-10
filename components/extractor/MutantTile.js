@@ -37,7 +37,7 @@ const getTierColor = (tier) => {
 
 const MutantTile = (props) => {
 	const mutant = props.mutant
-	const [canExtract, setCanExtract] = useState(props.mutant.canExtract)
+	const [canExtract, setCanExtract] = useState(mutant.canExtract)
 	let tierColor = getTierColor(mutant.tier)
 	const tierRef = useRef(null)
 	const tierButtonRef = useRef(null)
@@ -48,7 +48,7 @@ const MutantTile = (props) => {
 		if (!mutant.imageUrl) {
 			const mutantContract = new ethers.Contract(MUTANT_CONTRACT, abisMainnet.mutant, signer)
 			await mutantContract
-				.tokenURI(mutant.id)
+				.tokenURI(mutant.tokenId)
 				.then(fetch)
 				.then((resp) => resp.json())
 				.then((mutantData) => {
@@ -58,9 +58,9 @@ const MutantTile = (props) => {
 		}
 
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abisMainnet.dna, signer)
-		const isCooledDown = await dnaContract.isCooledDown(mutant.id)
+		const isCooledDown = await dnaContract.isCooledDown(mutant.tokenIdd)
 		await dnaContract
-			.mutantInfo(mutant.id)
+			.mutantInfo(mutant.tokenId)
 			.then((mutantInfo) => {
 				const updateMutant = mutant
 				updateMutant.tier = mutantInfo.tier
@@ -68,7 +68,7 @@ const MutantTile = (props) => {
 				return updateMutant
 			})
 			.then((mutantToUpdate) => {
-				fetch(BASE_URL + "/mutant/update/id/" + mutant.id, {
+				fetch(BASE_URL + "/mutant/update/id/" + mutant.tokenId, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -100,7 +100,7 @@ const MutantTile = (props) => {
 	}
 
 	return (
-		<div id={`mutantTile${mutant.id}`} key={mutant.id} className="rounded-lg bg-gray-200 p-1 m-2">
+		<div id={`mutantTile${mutant.tokenId}`} key={mutant.tokenId} className="rounded-lg bg-gray-200 p-1 m-2">
 			<div className="w-32 m-2">
 				<div className="w-full flex justify-center items-center">
 					<button
@@ -108,10 +108,10 @@ const MutantTile = (props) => {
 						ref={tierButtonRef}
 						type="button"
 						className={`${styles.tierButton + " " + tierColor} opacity-80 font-bold mb-2`}
-						onClick={() => updateMutant(mutant.id)}
+						onClick={() => updateMutant(mutant.tokenId)}
 					>
 						<div className={"px-1.5 py-1.5 relative"}>
-							<span className="font-bold text-lg mr-2">{mutant.id}</span>{" "}
+							<span className="font-bold text-lg mr-2">{mutant.tokenId}</span>{" "}
 							<span ref={tierRef} className="italic">
 								Tier: {MUTANT_TIERS[mutant.tier]}
 							</span>
@@ -126,7 +126,7 @@ const MutantTile = (props) => {
 				</div>
 				<img
 					ref={imgRef}
-					src={mutant.imageUrl || failedExperiment.src}
+					src={(mutant.rawMetadata && mutant.rawMetadata.image) || failedExperiment.src}
 					className="rounded-lg w-full mb-2"
 					alt="failed experiment"
 				/>
@@ -134,7 +134,7 @@ const MutantTile = (props) => {
 					disabled={!signer || (props.action.type === "Extract" && !canExtract)}
 					type="button"
 					className={`${styles.button} w-full disabled:opacity-50`}
-					onClick={() => props.action.func()}
+					onClick={() => props.action.func(mutant).then(console.log)}
 				>
 					{props.action.type}
 				</button>

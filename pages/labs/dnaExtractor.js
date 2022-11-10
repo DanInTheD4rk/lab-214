@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import abis from "../../constants/abis"
+import abis from "../../constants/abisGoerli"
 import abisMainnet from "../../constants/abisMainnet"
 import { ethers } from "ethers"
 import { Network, Alchemy } from "alchemy-sdk"
@@ -29,6 +29,10 @@ const DnaExtractor = () => {
 	const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 	const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 	const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
+	const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
+	const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
+	const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
+	const EXTRACTOR_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_CONTRACT
 
 	useEffect(() => {
 		;(async () => {
@@ -42,8 +46,8 @@ const DnaExtractor = () => {
 			console.log(signerAddress)
 			// setContract(new ethers.Contract("0xa513e6e4b8f2a923d98304ec87f64353c4d5c853", abis.mutant, signer))
 			setContracts({
-				mutant: new ethers.Contract(MUTANT_CONTRACT, abisMainnet.mutant, signer),
-				dna: new ethers.Contract(DNA_CONTRACT, abisMainnet.dna, signer),
+				mutant: new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer),
+				dna: new ethers.Contract(DNA_CONTRACT, abis.dna, signer),
 			})
 			// setContract(new ethers.Contract("0x83f82414b5065bB9A85E330C67B4A10f798F4eD2", abisMainnet.mutant, signer))
 		})()
@@ -66,12 +70,30 @@ const DnaExtractor = () => {
 	// }, [ownedMutants])
 
 	const mint = async () => {
-		let mutantCount = await contracts.mutant.balanceOf("0x66bc5c43fb0de86a638e56e139ddf6efe13b130d")
+		let mutantCount = await contracts.mutant.balanceOf(signerAddress)
 		console.log(mutantCount)
+		mutantCount = await contracts.mutant.ownerOf(1)
+		console.log(mutantCount)
+		const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
+		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
+		const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
+		const rwasteContract = new ethers.Contract(RWASTE_CONTRACT, abis.rwaste, signer)
+		const extractorContract = new ethers.Contract(EXTRACTOR_CONTRACT, abis.extractorLab, signer)
+
+		let t = await factoryContract.mutantToLab(1)
+		console.log(t)
+		// mutantCount = await contracts.mutant.revealed()
+		// console.log(mutantCount)
+		// // mutantCount = await contracts.mutant.setBaseTokenURI("https://mutant-kaiju-api-2g83z.ondigitalocean.app/mutant/")
+		// // console.log(mutantCount)
+		// mutantCount = await contracts.mutant.tokenURI(0)
+		// console.log(mutantCount)
 		// try {
-		// 	await contract.mint(1, { value: ethers.utils.parseEther("0.06666") })
+		// 	// await contracts.mutant.mint(1, ethers.utils.parseEther("0.06666"))
+		// 	await contracts.mutant.mint(1, { value: ethers.utils.parseEther("0.06666") })
 		// } catch (error) {
 		// 	console.log("Transaction canceled")
+		// 	console.log(error)
 		// }
 	}
 
