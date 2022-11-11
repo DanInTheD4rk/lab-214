@@ -80,8 +80,9 @@ const DnaExtractor = () => {
 		const rwasteContract = new ethers.Contract(RWASTE_CONTRACT, abis.rwaste, signer)
 		const extractorContract = new ethers.Contract(EXTRACTOR_CONTRACT, abis.extractorLab, signer)
 
-		let t = await factoryContract.mutantToLab(1)
-		console.log(t)
+		// let t = await factoryContract.mutantToLab(1)
+		// console.log(t)
+		// await factoryContract.setContracts([DNA_CONTRACT, RWASTE_CONTRACT, SCALES_CONTRACT, MUTANT_CONTRACT])
 		// mutantCount = await contracts.mutant.revealed()
 		// console.log(mutantCount)
 		// // mutantCount = await contracts.mutant.setBaseTokenURI("https://mutant-kaiju-api-2g83z.ondigitalocean.app/mutant/")

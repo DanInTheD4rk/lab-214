@@ -30,18 +30,6 @@ const Staking = () => {
 	const { data: signer, isError, isLoading } = useSigner() //signer._address
 	const signerAddress = signer._address
 
-	useContractEvent({
-		addressOrName: MUTANT_CONTRACT,
-		contractInterface: abis.mutant,
-		eventName: "Approval",
-		listener([ownerAddress, approvedAddress, tokenId]) {
-			if (ownerAddress === signer._address && !checkIfZeroAddress(approvedAddress)) {
-				const stakingContract = new ethers.Contract(approvedAddress, abis.extractorLab, signer)
-				stakingContract.stakeMutant(tokenId.toString())
-			}
-		},
-	})
-
 	useEffect(() => {
 		if (!isLoading && signer) {
 			const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
@@ -98,53 +86,23 @@ const Staking = () => {
 		console.log(serverMutants)
 		serverMutants.forEach((mutant) => {
 			// prettier-ignore
-			const type = checkIfZeroAddress(mutant.labAddress)
+			const action = checkIfZeroAddress(mutant.labAddress)
 				? ACTION_TYPES[1] // Create Lab
 				: mutant.isStaked
 					? ACTION_TYPES[3] // Unstake
 					: ACTION_TYPES[2] // Stake
 
 			// prettier-ignore
-			const func = type === ACTION_TYPES[1] 
-				? createLab 
-				: type === ACTION_TYPES[3] 
-					? unstakeMutant 
-					: stakeMutant
-
 			tiles[mutant.tokenId] = (
 				<MutantTile
 					key={mutant.tokenId}
 					mutant={mutant}
-					action={{
-						type: type,
-						func: func,
-					}}
+					action={action}
 				/>
 			)
 		})
 		setMutantTiles(tiles)
 	}, [serverMutants])
-
-	const createLab = async (mutant) => {
-		const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
-		await factoryContract.createLab(mutant.tokenId)
-	}
-
-	const stakeMutant = async (mutant) => {
-		const mutantContract = new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer)
-		const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
-		const stakingAddress = await factoryContract.mutantToLab(mutant.tokenId)
-		const owner = await mutantContract.ownerOf(mutant.tokenId)
-
-		console.log("address: " + stakingAddress)
-		console.log("owner: " + owner)
-		await mutantContract.approve(stakingAddress, mutant.tokenId)
-	}
-
-	const unstakeMutant = async (mutant) => {
-		const stakingContract = new ethers.Contract(mutant.labAddress, abis.extractorLab, signer)
-		stakingContract.unstakeMutant(mutant.tokenId)
-	}
 
 	if (signer) {
 		return (

@@ -1846,6 +1846,44 @@ const abis = {
 			type: "event",
 		},
 		{
+			anonymous: false,
+			inputs: [
+				{
+					indexed: true,
+					internalType: "uint256",
+					name: "mutantId",
+					type: "uint256",
+				},
+				{
+					indexed: true,
+					internalType: "address",
+					name: "mutantOwner",
+					type: "address",
+				},
+			],
+			name: "Staked",
+			type: "event",
+		},
+		{
+			anonymous: false,
+			inputs: [
+				{
+					indexed: true,
+					internalType: "uint256",
+					name: "mutantId",
+					type: "uint256",
+				},
+				{
+					indexed: true,
+					internalType: "address",
+					name: "mutantOwner",
+					type: "address",
+				},
+			],
+			name: "Unstaked",
+			type: "event",
+		},
+		{
 			inputs: [],
 			name: "contracts",
 			outputs: [
@@ -2324,6 +2362,25 @@ const abis = {
 			inputs: [],
 			name: "ExtractorLabFactory__SenderNotTokenOwner",
 			type: "error",
+		},
+		{
+			anonymous: false,
+			inputs: [
+				{
+					indexed: true,
+					internalType: "uint256",
+					name: "mutantId",
+					type: "uint256",
+				},
+				{
+					indexed: true,
+					internalType: "address",
+					name: "contractAddress",
+					type: "address",
+				},
+			],
+			name: "LabCreated",
+			type: "event",
 		},
 		{
 			anonymous: false,
