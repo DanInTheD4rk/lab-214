@@ -1,9 +1,11 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import PropTypes from "prop-types"
 import failedExperiment from "../../public/failedExperiment.gif"
+import abis from "../../constants/abisGoerli"
 import abisMainnet from "../../constants/abisMainnet"
-import { ethers } from "ethers"
-import { ConnectorAlreadyConnectedError, useSigner } from "wagmi"
+import { Contract, ethers } from "ethers"
+import { useContractEvent, useSigner } from "wagmi"
+import { ACTION_TYPES } from "../../constants/extractor"
 
 const styles = {
 	button:
@@ -15,6 +17,7 @@ const styles = {
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
+const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 
 const MUTANT_TIERS = {
 	0: "F",
@@ -42,61 +45,78 @@ const MutantTile = (props) => {
 	const tierRef = useRef(null)
 	const tierButtonRef = useRef(null)
 	const imgRef = useRef(null)
+	const actionButtonRef = useRef(null)
 	const { data: signer } = useSigner()
+	const mutantContract = new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer)
+	const [action, setAction] = useState(null)
 
-	const updateMutant = async () => {
-		if (!mutant.imageUrl) {
-			const mutantContract = new ethers.Contract(MUTANT_CONTRACT, abisMainnet.mutant, signer)
-			await mutantContract
-				.tokenURI(mutant.tokenId)
-				.then(fetch)
-				.then((resp) => resp.json())
-				.then((mutantData) => {
-					mutant.imageUrl = mutantData.image
-					imgRef.current.src = mutantData.image
-				})
+	useEffect(() => {
+		// prettier-ignore
+		const actionFunction = props.action === ACTION_TYPES[1] 
+		? () => createLab()
+		: props.action === ACTION_TYPES[3] 
+			? () => unstakeMutant()
+			: () => stakeMutant()
+		setAction(() => actionFunction)
+	}, [])
+
+	const createLab = async () => {
+		const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
+		await factoryContract.createLab(mutant.tokenId)
+	}
+
+	const stakeMutant = async () => {
+		const mutantContract = new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer)
+		const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
+		const stakingAddress = await factoryContract.mutantToLab(mutant.tokenId)
+		const owner = await mutantContract.ownerOf(mutant.tokenId)
+
+		const filter = mutantContract.filters.Approval(owner, mutant.labAddress, mutant.tokenId)
+		mutantContract.once(filter, (_, approvedAddress, tokenId) => {
+			const stakingContract = new ethers.Contract(approvedAddress, abis.extractorLab, signer)
+			stakingContract.once("Staked", () => {
+				actionButtonRef.current.innerText = "Unstake"
+				setAction(() => unstakeMutant)
+				imgRef.current.src = failedExperiment.src
+			})
+			try {
+				stakingContract.stakeMutant(tokenId.toString())
+			} catch (error) {
+				console.log(error)
+			}
+			mutantContract.off(filter) // Do we need these?
+			mutantContract.removeAllListeners(filter)
+		})
+
+		console.log(mutantContract.listenerCount())
+		try {
+			await mutantContract.approve(stakingAddress, mutant.tokenId)
+		} catch (error) {
+			console.log(error)
 		}
+	}
 
-		const dnaContract = new ethers.Contract(DNA_CONTRACT, abisMainnet.dna, signer)
-		const isCooledDown = await dnaContract.isCooledDown(mutant.tokenIdd)
-		await dnaContract
-			.mutantInfo(mutant.tokenId)
-			.then((mutantInfo) => {
-				const updateMutant = mutant
-				updateMutant.tier = mutantInfo.tier
-				updateMutant.canExtract = isCooledDown && !mutantInfo.extractionOngoing
-				return updateMutant
-			})
-			.then((mutantToUpdate) => {
-				fetch(BASE_URL + "/mutant/update/id/" + mutant.tokenId, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(mutantToUpdate),
-				})
+	const unstakeMutant = async () => {
+		const stakingContract = new ethers.Contract(mutant.labAddress, abis.extractorLab, signer)
+		const filter = stakingContract.filters.Unstaked(mutant.tokenId, null)
+		stakingContract.once(filter, async () => {
+			actionButtonRef.current.innerText = "Stake"
+			setAction(() => stakeMutant)
+			mutantContract.off(filter) // Do we need these?
+			mutantContract.removeAllListeners(filter)
+			await mutantContract.tokenURI(mutant.tokenId).then((uri) => {
+				fetch(uri)
 					.then((resp) => resp.json())
-					.then((mutantData) => {
-						console.log(mutantData)
-						if (mutantData) {
-							tierRef.current.innerText = "Tier: " + MUTANT_TIERS[mutantData.tier]
-							tierButtonRef.current.className = `${
-								styles.tierButton + " " + getTierColor(mutantData.tier)
-							} opacity-80 font-bold mb-2`
-							setCanExtract(mutant.canExtract)
-						}
-					})
-					.catch((error) => {
-						// enter your logic for when there is an error (ex. error toast)
-						console.log(error)
+					.then((mutant) => {
+						imgRef.current.src = mutant.image || failedExperiment.src
 					})
 			})
-
-		// extractorAddress = await extractorFactory.mutantToLab(mutant.id)
-		// const signer = provider.getSigner(props.signerAddress)
-		// const extractorContract = new ethers.Contract(extractorAddress, abisMainnet.extractor, signer),
-		// mutant.isStaked = extractorContract.getMutantOwner() !== 0x address
-		// fetch(BASE_URL + "/mutant/update/" + props.signerAddress, {...
+		})
+		try {
+			await stakingContract.unstakeMutant(mutant.tokenId)
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	return (
@@ -108,7 +128,8 @@ const MutantTile = (props) => {
 						ref={tierButtonRef}
 						type="button"
 						className={`${styles.tierButton + " " + tierColor} opacity-80 font-bold mb-2`}
-						onClick={() => updateMutant(mutant.tokenId)}
+						// TODO: remove all the conditional styling for the update button
+						// onClick={() => updateMutant(mutant.tokenId)}
 					>
 						<div className={"px-1.5 py-1.5 relative"}>
 							<span className="font-bold text-lg mr-2">{mutant.tokenId}</span>{" "}
@@ -131,12 +152,13 @@ const MutantTile = (props) => {
 					alt="failed experiment"
 				/>
 				<button
-					disabled={!signer || (props.action.type === "Extract" && !canExtract)}
+					ref={actionButtonRef}
+					disabled={!signer || (props.action === "Extract" && !canExtract)}
 					type="button"
 					className={`${styles.button} w-full disabled:opacity-50`}
-					onClick={() => props.action.func(mutant).then(console.log)}
+					onClick={action}
 				>
-					{props.action.type}
+					{props.action}
 				</button>
 			</div>
 		</div>
@@ -147,5 +169,5 @@ export default MutantTile
 
 MutantTile.propTypes = {
 	mutant: PropTypes.object,
-	action: PropTypes.object,
+	action: PropTypes.string,
 }

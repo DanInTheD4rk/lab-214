@@ -20,16 +20,7 @@ const Extraction = () => {
 			.then((resp) => resp.json())
 			.then((stakedMutants) => {
 				stakedMutants.forEach((mutant) => {
-					tiles[mutant.id] = (
-						<MutantTile
-							key={mutant.id}
-							mutant={mutant}
-							action={{
-								type: "Extract",
-								func: () => console.log("Extracted!!"),
-							}}
-						/>
-					)
+					tiles[mutant.id] = <MutantTile key={mutant.id} mutant={mutant} action="Extract" />
 				})
 				setMutantTiles(tiles)
 			})
