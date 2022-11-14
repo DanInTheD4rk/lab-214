@@ -10,6 +10,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy"
 import { publicProvider } from "wagmi/providers/public"
 import Avatar from "../components/Avatar"
 import Layout from "../components/Layout"
+import { LoadingProvider } from "../components/LoadingContext"
 
 console.log(process.env.ALCHEMY_ID)
 const { chains, provider } = configureChains(
@@ -44,9 +45,11 @@ function MyApp({ Component, pageProps }) {
 				chains={[]}
 				modalSize="compact"
 			>
-				<Layout>
-					<Component {...pageProps} />
-				</Layout>
+				<LoadingProvider>
+					<Layout>
+						<Component {...pageProps} />
+					</Layout>
+				</LoadingProvider>
 			</RainbowKitProvider>
 		</WagmiConfig>
 	)
