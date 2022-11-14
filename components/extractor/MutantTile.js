@@ -42,7 +42,6 @@ const getTierColor = (tier) => {
 const MutantTile = (props) => {
 	const mutant = props.mutant
 	const { setLoading: setLoading } = useLoading()
-	const [canExtract, setCanExtract] = useState(mutant.canExtract)
 	let tierColor = getTierColor(mutant.tier)
 	const tierRef = useRef(null)
 	const tierButtonRef = useRef(null)
@@ -54,11 +53,13 @@ const MutantTile = (props) => {
 
 	useEffect(() => {
 		// prettier-ignore
-		const actionFunction = props.action === ACTION_TYPES[1] 
-		? () => createLab()
-		: props.action === ACTION_TYPES[3] 
-			? () => unstakeMutant()
-			: () => stakeMutant()
+		const actionFunction = props.action === ACTION_TYPES.CREATE
+			? () => createLab()
+			: props.action === ACTION_TYPES.EXTRACT 
+				? () => console.log("Extract!")
+				: props.action === ACTION_TYPES.STAKE
+					? () => stakeMutant()
+					: () => unstakeMutant()
 		setAction(() => actionFunction)
 	}, [])
 
@@ -165,7 +166,7 @@ const MutantTile = (props) => {
 					/>
 					<button
 						ref={actionButtonRef}
-						disabled={!signer || (props.action === "Extract" && !canExtract)}
+						disabled={!signer || (props.action === "Extract" && !mutant.canExtract)}
 						type="button"
 						className={`${styles.button} w-full disabled:opacity-50`}
 						onClick={action}

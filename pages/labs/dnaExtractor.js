@@ -98,48 +98,10 @@ const DnaExtractor = () => {
 		// }
 	}
 
-	const getMutantCount = async () => {
-		// let mutantCount = await contract.balanceOf(address)
-		// let mutantCount = await contract.balanceOf("0x66bc5c43fb0de86a638e56e139ddf6efe13b130d")
-		// console.log(mutantCount)
-
-		let addy = "0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8"
-		;(async () => {
-			alchemy.nft
-				.getNftsForOwner(addy, {
-					contractAddresses: [MUTANT_CONTRACT],
-				})
-				.then((nfts) => nfts.ownedNfts && nfts.ownedNfts.map((nft) => nft.rawMetadata.tokenId))
-				.then((mutantIds) => {
-					console.log(mutantIds)
-					fetch("http://localhost:8080/mutant/update/" + addy, {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify(mutantIds),
-					})
-						.then((resp) => resp.json())
-						.then((data) => {
-							// enter you logic when the fetch is successful
-							console.log(data)
-						})
-						.catch((error) => {
-							// enter your logic for when there is an error (ex. error toast)
-							console.log(error)
-						})
-				})
-		})()
-	}
-
 	return (
 		<div className="mx-10">
 			<button type="button" className={`m-10 ${styles.button} w-fit`} onClick={mint}>
 				Mint
-			</button>
-
-			<button type="button" className={`${styles.button} w-fit`} onClick={getMutantCount}>
-				Get Mutant Count
 			</button>
 
 			<div className="flex flex-wrap">

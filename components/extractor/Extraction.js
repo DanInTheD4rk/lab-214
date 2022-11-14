@@ -1,40 +1,81 @@
 import { useEffect, useState } from "react"
 import MutantTile from "./MutantTile"
-import PropTypes from "prop-types"
+import { checkIfZeroAddress } from "../../utils/utils"
+import { useSigner } from "wagmi"
+import { ethers } from "ethers"
+import abis from "../../constants/abisGoerli"
+import { ACTION_TYPES } from "../../constants/extractor"
 
-const styles = {
-	button:
-		"px-6 py-2.5 bg-gray-600 text-white font-medium text-xs font-bold leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg active:bg-gray-700 active:shadow-lg transition duration-150 ease-in-out",
-	tierButton:
-		"w-full hover:bg-gray-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg active:bg-gray-700 active:shadow-lg transition duration-150 ease-in-out",
-}
-
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
+const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 
 const Extraction = () => {
-	const [mutantTiles, setMutantTiles] = useState(null)
+	const [stakedMutants, setStakedMutants] = useState()
+	const [mutantTiles, setMutantTiles] = useState()
+	const { data: signer, isError, isLoading } = useSigner() //signer._address
 
 	useEffect(() => {
-		const tiles = {}
-		fetch(BASE_URL + "/mutant/staked/all")
-			.then((resp) => resp.json())
-			.then((stakedMutants) => {
-				stakedMutants.forEach((mutant) => {
-					tiles[mutant.id] = <MutantTile key={mutant.id} mutant={mutant} action="Extract" />
-				})
-				setMutantTiles(tiles)
-			})
-			.catch((error) => {
-				// enter your logic for when there is an error (ex. error toast)
-				console.log(error)
-			})
-	}, [])
+		if (!isLoading && signer) {
+			const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
+			const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
 
-	return (
-		<div>
-			<div className="flex flex-row flex-wrap justify-center">{mutantTiles && [...Object.values(mutantTiles)]}</div>
-		</div>
-	)
+			;(async () => {
+				const labMutantIds = await factoryContract.getMutantIds()
+				Promise.all(
+					labMutantIds.map((labMutantId) => {
+						let stakedMutant = {}
+						return factoryContract.mutantToLab(labMutantId).then(async (labAddress) => {
+							const stakeContract = new ethers.Contract(labAddress, abis.extractorLab, signer)
+							const contractMutantOwner = await stakeContract.getMutantOwner()
+							if (!checkIfZeroAddress(contractMutantOwner)) {
+								const isCooledDown = await dnaContract.isCooledDown(labMutantId)
+								return await dnaContract.mutantInfo(labMutantId).then((mutantInfo) => {
+									stakedMutant = {
+										tokenId: labMutantId.toString(),
+										labAddress: labAddress,
+										isStaked: true,
+										tier: mutantInfo.tier,
+										canExtract: isCooledDown,
+									}
+									return stakedMutant
+								})
+							} else {
+								return {
+									tokenId: -1,
+								}
+							}
+						})
+					})
+				).then((mutants) => {
+					setStakedMutants(mutants)
+				})
+			})()
+		}
+	}, [isLoading, signer])
+
+	useEffect(() => {
+		if (stakedMutants && stakedMutants.length > 0) {
+			const tiles = {}
+			stakedMutants.forEach((mutant) => {
+				if (mutant.tokenId >= 0) {
+					tiles[mutant.tokenId] = <MutantTile key={mutant.tokenId} mutant={mutant} action={ACTION_TYPES.EXTRACT} />
+				}
+			})
+			setMutantTiles(tiles)
+		}
+	}, [stakedMutants])
+
+	if (mutantTiles && Object.values(mutantTiles).length > 0) {
+		return (
+			<div>
+				<div className="flex flex-row flex-wrap justify-center">{[...Object.values(mutantTiles)]}</div>
+			</div>
+		)
+	} else if (mutantTiles) {
+		return <div className="flex flex-row flex-wrap justify-center text-xl">No mutants available for extraction</div>
+	} else {
+		return null
+	}
 }
 
 export default Extraction

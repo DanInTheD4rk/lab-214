@@ -21,7 +21,7 @@ const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 
 const Staking = () => {
 	const [mutantTiles, setMutantTiles] = useState(null)
-	const [serverMutants, setServerMutants] = useState([])
+	const [ownedMutants, setOwnedMutants] = useState([])
 	/* 
 		Ray: 0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8 
 		d4rk: 0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d
@@ -71,7 +71,7 @@ const Staking = () => {
 								})
 							})
 						)
-							.then(setServerMutants)
+							.then(setOwnedMutants)
 							.catch((error) => {
 								// enter your logic for when there is an error (ex. error toast)
 								console.log(error)
@@ -83,14 +83,13 @@ const Staking = () => {
 
 	useEffect(() => {
 		const tiles = {}
-		console.log(serverMutants)
-		serverMutants.forEach((mutant) => {
+		ownedMutants.forEach((mutant) => {
 			// prettier-ignore
 			const action = checkIfZeroAddress(mutant.labAddress)
-				? ACTION_TYPES[1] // Create Lab
+				? ACTION_TYPES.CREATE
 				: mutant.isStaked
-					? ACTION_TYPES[3] // Unstake
-					: ACTION_TYPES[2] // Stake
+					? ACTION_TYPES.UNSTAKE
+					: ACTION_TYPES.STAKE
 
 			// prettier-ignore
 			tiles[mutant.tokenId] = (
@@ -102,7 +101,7 @@ const Staking = () => {
 			)
 		})
 		setMutantTiles(tiles)
-	}, [serverMutants])
+	}, [ownedMutants])
 
 	if (signer) {
 		return (
