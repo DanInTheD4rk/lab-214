@@ -28,10 +28,10 @@ const Staking = () => {
 	*/
 	// const signerAddress = "0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"
 	const { data: signer, isError, isLoading } = useSigner() //signer._address
-	const signerAddress = signer._address
 
 	useEffect(() => {
 		if (!isLoading && signer) {
+			const signerAddress = signer._address
 			const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
 			const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
 
