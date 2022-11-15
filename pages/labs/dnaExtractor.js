@@ -69,6 +69,18 @@ const DnaExtractor = () => {
 	// 	console.log(ownedMutants)
 	// }, [ownedMutants])
 
+	const upgrade = async () => {
+		const mutantId = 2
+		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
+		// const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
+		// const tx = await scalesContract.approve(DNA_CONTRACT, ethers.utils.parseEther("600"))
+		// await tx.wait(6)
+		// await contracts.mutant.approve(signer._address, mutantId)
+		// let mutantCount = await contracts.mutant.upgrade(mutantId)
+		await dnaContract.upgradeMutant(mutantId, 6)
+		console.log("mutant upgraded")
+	}
+
 	const mint = async () => {
 		let mutantCount = await contracts.mutant.balanceOf(signerAddress)
 		console.log(mutantCount)
@@ -79,6 +91,9 @@ const DnaExtractor = () => {
 		const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
 		const rwasteContract = new ethers.Contract(RWASTE_CONTRACT, abis.rwaste, signer)
 		const extractorContract = new ethers.Contract(EXTRACTOR_CONTRACT, abis.extractorLab, signer)
+
+		await scalesContract.withdraw()
+		console.log("scales added!")
 
 		// let t = await factoryContract.mutantToLab(1)
 		// console.log(t)
@@ -102,6 +117,10 @@ const DnaExtractor = () => {
 		<div className="mx-10">
 			<button type="button" className={`m-10 ${styles.button} w-fit`} onClick={mint}>
 				Mint
+			</button>
+
+			<button type="button" className={`m-10 ${styles.button} w-fit`} onClick={upgrade}>
+				Upgrade
 			</button>
 
 			<div className="flex flex-wrap">

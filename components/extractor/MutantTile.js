@@ -19,6 +19,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
+const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
 
 const MUTANT_TIERS = {
 	0: "F",
@@ -56,7 +57,7 @@ const MutantTile = (props) => {
 		const actionFunction = props.action === ACTION_TYPES.CREATE
 			? () => createLab()
 			: props.action === ACTION_TYPES.EXTRACT 
-				? () => console.log("Extract!")
+				? () => extractDna()
 				: props.action === ACTION_TYPES.STAKE
 					? () => stakeMutant()
 					: () => unstakeMutant()
@@ -82,6 +83,7 @@ const MutantTile = (props) => {
 
 		const filter = mutantContract.filters.Approval(owner, mutant.labAddress, mutant.tokenId)
 		mutantContract.once(filter, async (_, approvedAddress, tokenId) => {
+			mutantContract.off(filter)
 			const stakingContract = new ethers.Contract(approvedAddress, abis.extractorLab, signer)
 			stakingContract.once("Staked", () => {
 				actionButtonRef.current.innerText = "Unstake"
@@ -93,8 +95,6 @@ const MutantTile = (props) => {
 				console.log(error)
 				setLoading(false)
 			})
-			mutantContract.off(filter) // Do we need these?
-			mutantContract.removeAllListeners(filter)
 		})
 
 		await mutantContract.approve(stakingAddress, mutant.tokenId).catch((error) => {
@@ -107,10 +107,9 @@ const MutantTile = (props) => {
 		const stakingContract = new ethers.Contract(mutant.labAddress, abis.extractorLab, signer)
 		const filter = stakingContract.filters.Unstaked(mutant.tokenId, null)
 		stakingContract.once(filter, async () => {
+			mutantContract.off(filter)
 			actionButtonRef.current.innerText = "Stake"
 			setAction(() => stakeMutant)
-			mutantContract.off(filter) // Do we need these?
-			mutantContract.removeAllListeners(filter)
 			await mutantContract.tokenURI(mutant.tokenId).then((uri) => {
 				fetch(uri)
 					.then((resp) => resp.json())
@@ -129,6 +128,48 @@ const MutantTile = (props) => {
 			console.log(error)
 			setLoading(false)
 		})
+	}
+
+	const extractDna = async () => {
+		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
+		const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
+		const stakingContract = new ethers.Contract(mutant.labAddress, abis.extractorLab, signer)
+		const filter = scalesContract.filters.Approval(signer._address, mutant.labAddress, null)
+
+		scalesContract.once(filter, async () => {
+			scalesContract.off(filter)
+			const extractionFilter = dnaContract.filters.ExtractionComplete(mutant.tokenId, null, null, null)
+
+			dnaContract.once(extractionFilter, (mutantId, batchId, boostId, results) => {
+				dnaContract.off(extractionFilter)
+				console.log(results)
+				actionButtonRef.current.disabled = true
+				setLoading(false)
+			})
+			await stakingContract.extractDna(mutant.tokenId, 0).catch((error) => {
+				console.log(error)
+				setLoading(false)
+			})
+		})
+
+		const canExtract = await dnaContract.isCooledDown(mutant.tokenId).catch((error) => {
+			console.log(error)
+			setLoading(false)
+		})
+		if (canExtract) {
+			setLoading(true)
+			const totalCost = await stakingContract.getFee().then(async (fee) => {
+				const extractCost = await stakingContract.getExtractionCost()
+				return (Number(fee) + Number(extractCost)).toString()
+			})
+			await scalesContract.approve(mutant.labAddress, totalCost).catch((error) => {
+				console.log(error)
+				setLoading(false)
+			})
+		} else {
+			// toast: mutant is not cooled down
+			console.log("not cooled down")
+		}
 	}
 
 	return (
