@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import MutantTile from "./MutantTile"
+import ExtractTile from "./ExtractTile"
 import { checkIfZeroAddress } from "../../utils/utils"
 import { useSigner } from "wagmi"
 import { ethers } from "ethers"
@@ -58,7 +58,7 @@ const Extraction = () => {
 			const tiles = {}
 			stakedMutants.forEach((mutant) => {
 				if (mutant.tokenId >= 0) {
-					tiles[mutant.tokenId] = <MutantTile key={mutant.tokenId} mutant={mutant} action={ACTION_TYPES.EXTRACT} />
+					tiles[mutant.tokenId] = <ExtractTile key={mutant.tokenId} mutant={mutant} />
 				}
 			})
 			setMutantTiles(tiles)
