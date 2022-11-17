@@ -55,8 +55,6 @@ const ExtractTile = (props) => {
 
 			dnaContract.once(extractionFilter, (mutantId, batchId, boostId, results) => {
 				dnaContract.off(extractionFilter)
-
-				console.log(results)
 				const resultsModalInfo = {
 					title: "Extraction Results",
 					actionName: results.success ? "Transfer" : "",
@@ -64,9 +62,9 @@ const ExtractTile = (props) => {
 					actionColor: "green",
 					component: <ResultsModal results={results} />,
 				}
+				setContents(resultsModalInfo)
 				actionButtonRef.current.disabled = true
 				setLoading(false)
-				setContents(resultsModalInfo)
 				setOpen(true)
 			})
 			await stakingContract.extractDna(mutant.tokenId, 0).catch((error) => {
@@ -96,30 +94,19 @@ const ExtractTile = (props) => {
 	}
 
 	const transerDna = async (results) => {
-		console.log("transfered!")
 		setLoading(true)
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
 		const stakingContract = new ethers.Contract(mutant.labAddress, abis.extractorLab, signer)
 		const transferFilter = dnaContract.filters.TransferSingle(null, mutant.labAddress, signer._address, null, null)
 
 		dnaContract.once(transferFilter, (operator, from, to, id, amount) => {
+			// TODO: transfer complete modal
+			console.log("transfered!")
 			dnaContract.off(transferFilter)
-			console.log(results)
-
-			const resultsModalInfo = {
-				title: "Extraction Results",
-				actionName: results.success ? "Transfer" : "",
-				action: results.success ? transerDna(results) : () => {},
-				actionColor: "green",
-				component: <ResultsModal results={results} />,
-			}
-			actionButtonRef.current.disabled = true
 			setLoading(false)
-			setContents(resultsModalInfo)
-			setOpen(true)
+			// setOpen(true)
 		})
-
-		await stakingContract.transferDna(results.tokenId).catch((error) => {
+		await stakingContract.transferDna(mutant.tokenId).catch((error) => {
 			console.log(error)
 			setLoading(false)
 		})
@@ -163,8 +150,6 @@ const ExtractTile = (props) => {
 						disabled={!signer || !mutant.canExtract}
 						type="button"
 						className={`${styles.button} w-full disabled:opacity-50`}
-						// onClick={() => extractDna()}
-						// onClick={() => props.setOpenModal(true)}
 						onClick={() => {
 							setContents(modalInfo)
 							setOpen(true)

@@ -26,7 +26,7 @@ const ResultsModal = (props) => {
 		}
 	}, [props.results])
 
-	if (dnaInfo) {
+	if (dnaInfo && tokenId) {
 		return (
 			<div className="flex">
 				<div className="max-h-max px-4">
