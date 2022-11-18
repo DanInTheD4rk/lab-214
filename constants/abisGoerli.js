@@ -1885,6 +1885,19 @@ const abis = {
 		},
 		{
 			inputs: [],
+			name: "DEFAULT_DNA_ID",
+			outputs: [
+				{
+					internalType: "uint8",
+					name: "",
+					type: "uint8",
+				},
+			],
+			stateMutability: "view",
+			type: "function",
+		},
+		{
+			inputs: [],
 			name: "contracts",
 			outputs: [
 				{
@@ -1931,7 +1944,7 @@ const abis = {
 		},
 		{
 			inputs: [],
-			name: "getExtractionCost",
+			name: "getExtractedDnaId",
 			outputs: [
 				{
 					internalType: "uint256",
@@ -1943,19 +1956,13 @@ const abis = {
 			type: "function",
 		},
 		{
-			inputs: [
-				{
-					internalType: "uint256",
-					name: "_mutantId",
-					type: "uint256",
-				},
-			],
-			name: "getExtractorForMutant",
+			inputs: [],
+			name: "getExtractionCost",
 			outputs: [
 				{
-					internalType: "address",
+					internalType: "uint256",
 					name: "",
-					type: "address",
+					type: "uint256",
 				},
 			],
 			stateMutability: "view",
@@ -1969,6 +1976,19 @@ const abis = {
 					internalType: "uint256",
 					name: "",
 					type: "uint256",
+				},
+			],
+			stateMutability: "view",
+			type: "function",
+		},
+		{
+			inputs: [],
+			name: "getLastExtractor",
+			outputs: [
+				{
+					internalType: "address",
+					name: "",
+					type: "address",
 				},
 			],
 			stateMutability: "view",
@@ -2062,27 +2082,27 @@ const abis = {
 			inputs: [
 				{
 					internalType: "address",
-					name: "operator",
+					name: "",
 					type: "address",
 				},
 				{
 					internalType: "address",
-					name: "from",
+					name: "",
 					type: "address",
 				},
 				{
 					internalType: "uint256[]",
-					name: "ids",
+					name: "",
 					type: "uint256[]",
 				},
 				{
 					internalType: "uint256[]",
-					name: "values",
+					name: "",
 					type: "uint256[]",
 				},
 				{
 					internalType: "bytes",
-					name: "data",
+					name: "",
 					type: "bytes",
 				},
 			],
@@ -2094,7 +2114,7 @@ const abis = {
 					type: "bytes4",
 				},
 			],
-			stateMutability: "view",
+			stateMutability: "pure",
 			type: "function",
 		},
 		{
@@ -2303,13 +2323,7 @@ const abis = {
 			type: "function",
 		},
 		{
-			inputs: [
-				{
-					internalType: "uint256",
-					name: "_mutantId",
-					type: "uint256",
-				},
-			],
+			inputs: [],
 			name: "transferDna",
 			outputs: [],
 			stateMutability: "nonpayable",

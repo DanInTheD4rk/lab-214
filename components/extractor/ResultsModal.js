@@ -10,12 +10,11 @@ const ResultsModal = (props) => {
 	const [dnaInfo, setDnaInfo] = useState()
 
 	useEffect(() => {
-		if (tokenId) {
+		if (success) {
 			;(async () => {
 				await fetch(DNA_URI + tokenId)
 					.then((resp) => resp.json())
 					.then((dnaData) => {
-						console.log(dnaData)
 						setDnaInfo(dnaData)
 					})
 					.catch((error) => {
@@ -26,7 +25,7 @@ const ResultsModal = (props) => {
 		}
 	}, [props.results])
 
-	if (dnaInfo && tokenId) {
+	if (dnaInfo && success) {
 		return (
 			<div className="flex">
 				<div className="max-h-max px-4">
@@ -37,6 +36,20 @@ const ResultsModal = (props) => {
 					{dnaInfo && <h2 className="font-bold">{dnaInfo.name}</h2>}
 					{dnaInfo && <p className="mb-3">{dnaInfo.description}</p>}
 					<p className="italic">You have 14 days to transfer the DNA to your wallet</p>
+				</div>
+			</div>
+		)
+	} else if (!success) {
+		return (
+			<div className="flex">
+				<div className="max-h-max px-4">
+					<img className="shadow-lg rounded w-52 h-auto border-none" src={imgSource} />
+				</div>
+
+				<div>
+					<h2 className="font-bold">Experiment Failed!</h2>
+					<p className="mb-3">Extracted DNA is unsuitable for [REDACTED] </p>
+					<p className="italic">This mutant will be available for another extraction in 14 days</p>
 				</div>
 			</div>
 		)

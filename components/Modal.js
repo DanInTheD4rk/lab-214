@@ -72,7 +72,7 @@ const Modal = (props) => {
 												props.setOpen(false)
 											}}
 										>
-											{actionName}
+											{actionName ? actionName : "OK"}
 										</button>
 										{actionName && (
 											<button

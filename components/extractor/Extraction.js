@@ -29,6 +29,7 @@ const Extraction = () => {
 							const contractMutantOwner = await stakeContract.getMutantOwner()
 							if (!checkIfZeroAddress(contractMutantOwner)) {
 								const isCooledDown = await dnaContract.isCooledDown(labMutantId)
+								const lastExtractor = await stakeContract.getLastExtractor()
 								return await dnaContract.mutantInfo(labMutantId).then((mutantInfo) => {
 									stakedMutant = {
 										tokenId: labMutantId.toString(),
@@ -36,6 +37,7 @@ const Extraction = () => {
 										isStaked: true,
 										tier: mutantInfo.tier,
 										canExtract: isCooledDown,
+										lastExtractor: lastExtractor,
 									}
 									return stakedMutant
 								})
@@ -54,15 +56,15 @@ const Extraction = () => {
 	}, [isLoading, signer])
 
 	useEffect(() => {
+		const tiles = {}
 		if (stakedMutants && stakedMutants.length > 0) {
-			const tiles = {}
 			stakedMutants.forEach((mutant) => {
 				if (mutant.tokenId >= 0) {
 					tiles[mutant.tokenId] = <ExtractTile key={mutant.tokenId} mutant={mutant} />
 				}
 			})
-			setMutantTiles(tiles)
 		}
+		setMutantTiles(tiles)
 	}, [stakedMutants])
 
 	if (mutantTiles && Object.values(mutantTiles).length > 0) {

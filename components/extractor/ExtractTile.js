@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react"
 import PropTypes from "prop-types"
 import failedExperiment from "../../public/failedExperiment.gif"
+import dnaTransfer from "../../public/dna/dnaTransfer.gif"
 import abis from "../../constants/abisGoerli"
 import abisMainnet from "../../constants/abisMainnet"
 import { Contract, ethers } from "ethers"
@@ -42,6 +43,7 @@ const ExtractTile = (props) => {
 	const actionButtonRef = useRef(null)
 	const { data: signer } = useSigner()
 	const { open, setOpen, setContents } = useModal()
+	const canTransfer = mutant.lastExtractor === signer._address
 
 	const extractDna = async () => {
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
@@ -58,7 +60,7 @@ const ExtractTile = (props) => {
 				const resultsModalInfo = {
 					title: "Extraction Results",
 					actionName: results.success ? "Transfer" : "",
-					action: results.success ? () => transerDna(results) : () => console.log("test"),
+					action: results.success ? () => transerDna() : () => {},
 					actionColor: "green",
 					component: <ResultsModal results={results} />,
 				}
@@ -93,7 +95,7 @@ const ExtractTile = (props) => {
 		}
 	}
 
-	const transerDna = async (results) => {
+	const transerDna = async () => {
 		setLoading(true)
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
 		const stakingContract = new ethers.Contract(mutant.labAddress, abis.extractorLab, signer)
@@ -106,7 +108,7 @@ const ExtractTile = (props) => {
 			setLoading(false)
 			// setOpen(true)
 		})
-		await stakingContract.transferDna(mutant.tokenId).catch((error) => {
+		await stakingContract.transferDna().catch((error) => {
 			console.log(error)
 			setLoading(false)
 		})
@@ -126,7 +128,7 @@ const ExtractTile = (props) => {
 				<div className="w-32 m-2">
 					<div className="w-full flex justify-center items-center">
 						<button
-							disabled={true}
+							disabled
 							ref={tierButtonRef}
 							type="button"
 							className={`${styles.tierButton + " " + tierColor} opacity-80 font-bold mb-2`}
@@ -141,21 +143,25 @@ const ExtractTile = (props) => {
 					</div>
 					<img
 						ref={imgRef}
-						src={(mutant.rawMetadata && mutant.rawMetadata.image) || failedExperiment.src}
+						src={canTransfer ? dnaTransfer.src : failedExperiment.src}
 						className="rounded-lg w-full mb-2"
 						alt="failed experiment"
 					/>
 					<button
 						ref={actionButtonRef}
-						disabled={!signer || !mutant.canExtract}
+						disabled={(!signer || !mutant.canExtract) && !canTransfer}
 						type="button"
 						className={`${styles.button} w-full disabled:opacity-50`}
-						onClick={() => {
-							setContents(modalInfo)
-							setOpen(true)
-						}}
+						onClick={
+							canTransfer
+								? () => transerDna()
+								: () => {
+										setContents(modalInfo)
+										setOpen(true)
+								  }
+						}
 					>
-						Extract
+						{canTransfer ? "Transfer" : "Extract"}
 					</button>
 				</div>
 			</div>
