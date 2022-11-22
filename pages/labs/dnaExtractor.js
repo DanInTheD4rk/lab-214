@@ -72,32 +72,41 @@ const DnaExtractor = () => {
 	const upgrade = async () => {
 		const mutantId = 2
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
-		// const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
+		const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
 		// const tx = await scalesContract.approve(DNA_CONTRACT, ethers.utils.parseEther("600"))
 		// await tx.wait(6)
 		// await contracts.mutant.approve(signer._address, mutantId)
 		// let mutantCount = await contracts.mutant.upgrade(mutantId)
-		await dnaContract.upgradeMutant(mutantId, 6)
-		console.log("mutant upgraded")
+		// await dnaContract.upgradeMutant(mutantId, 6)
+		// console.log("mutant upgraded")
+
+		await scalesContract.withdraw()
+		console.log("scales added!")
 	}
 
 	const mint = async () => {
-		let mutantCount = await contracts.mutant.balanceOf(signerAddress)
-		console.log(mutantCount)
-		mutantCount = await contracts.mutant.ownerOf(1)
-		console.log(mutantCount)
+		// let mutantCount = await contracts.mutant.balanceOf(signerAddress)
+		// console.log(mutantCount)
+		// let owner = await contracts.mutant.ownerOf(1)
+		// console.log(owner)
 		const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
 		const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
 		const rwasteContract = new ethers.Contract(RWASTE_CONTRACT, abis.rwaste, signer)
 		const extractorContract = new ethers.Contract(EXTRACTOR_CONTRACT, abis.extractorLab, signer)
 
-		await scalesContract.withdraw()
-		console.log("scales added!")
+		// let labContract = await factoryContract.mutantToLab(0)
+		// console.log(labContract)
+		// const extractorDnaContract = new ethers.Contract(labContract, abis.extractorLab, signer)
+		// let extractor = await extractorDnaContract.getExtractorForMutant(0)
+		// console.log(extractor)
+		// await extractorDnaContract.transferDna(0)
 
-		// let t = await factoryContract.mutantToLab(1)
-		// console.log(t)
-		// await factoryContract.setContracts([DNA_CONTRACT, RWASTE_CONTRACT, SCALES_CONTRACT, MUTANT_CONTRACT])
+		// await scalesContract.withdraw()
+		// console.log("scales added!")
+
+		await factoryContract.setContracts([DNA_CONTRACT, RWASTE_CONTRACT, SCALES_CONTRACT, MUTANT_CONTRACT])
+		await extractorContract.setContracts([DNA_CONTRACT, RWASTE_CONTRACT, SCALES_CONTRACT, MUTANT_CONTRACT])
 		// mutantCount = await contracts.mutant.revealed()
 		// console.log(mutantCount)
 		// // mutantCount = await contracts.mutant.setBaseTokenURI("https://mutant-kaiju-api-2g83z.ondigitalocean.app/mutant/")

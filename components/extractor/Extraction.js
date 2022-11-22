@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
-import MutantTile from "./MutantTile"
+import ExtractTile from "./ExtractTile"
 import { checkIfZeroAddress } from "../../utils/utils"
 import { useSigner } from "wagmi"
 import { ethers } from "ethers"
 import abis from "../../constants/abisGoerli"
-import { ACTION_TYPES } from "../../constants/extractor"
+import { ACTION_TYPES, DEFAULT_DNA_ID } from "../../constants/extractor"
 
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
@@ -29,6 +29,12 @@ const Extraction = () => {
 							const contractMutantOwner = await stakeContract.getMutantOwner()
 							if (!checkIfZeroAddress(contractMutantOwner)) {
 								const isCooledDown = await dnaContract.isCooledDown(labMutantId)
+								const extractedDnaId = await stakeContract.getExtractedDnaId()
+								const extractionCost = await stakeContract.getExtractionCost() // TODO: update to total
+								const lastExtractor =
+									extractedDnaId !== DEFAULT_DNA_ID
+										? await stakeContract.getLastExtractor()
+										: ethers.constants.AddressZero
 								return await dnaContract.mutantInfo(labMutantId).then((mutantInfo) => {
 									stakedMutant = {
 										tokenId: labMutantId.toString(),
@@ -36,6 +42,9 @@ const Extraction = () => {
 										isStaked: true,
 										tier: mutantInfo.tier,
 										canExtract: isCooledDown,
+										lastExtractor: lastExtractor,
+										extractedDnaId: extractedDnaId,
+										extractionCost: ethers.utils.formatEther(extractionCost),
 									}
 									return stakedMutant
 								})
@@ -54,15 +63,15 @@ const Extraction = () => {
 	}, [isLoading, signer])
 
 	useEffect(() => {
+		const tiles = {}
 		if (stakedMutants && stakedMutants.length > 0) {
-			const tiles = {}
 			stakedMutants.forEach((mutant) => {
 				if (mutant.tokenId >= 0) {
-					tiles[mutant.tokenId] = <MutantTile key={mutant.tokenId} mutant={mutant} action={ACTION_TYPES.EXTRACT} />
+					tiles[mutant.tokenId] = <ExtractTile key={mutant.tokenId} mutant={mutant} />
 				}
 			})
-			setMutantTiles(tiles)
 		}
+		setMutantTiles(tiles)
 	}, [stakedMutants])
 
 	if (mutantTiles && Object.values(mutantTiles).length > 0) {

@@ -5,7 +5,7 @@ import abis from "../../constants/abisGoerli"
 import abisMainnet from "../../constants/abisMainnet"
 import { Contract, ethers } from "ethers"
 import { useContractEvent, useSigner } from "wagmi"
-import { ACTION_TYPES } from "../../constants/extractor"
+import { ACTION_TYPES, MUTANT_TIERS } from "../../constants/extractor"
 import { useLoading } from "../LoadingContext"
 
 const styles = {
@@ -20,16 +20,6 @@ const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
-
-const MUTANT_TIERS = {
-	0: "F",
-	1: "E",
-	2: "D",
-	3: "C",
-	4: "B",
-	5: "A",
-	6: "S",
-}
 
 const getTierColor = (tier) => {
 	// prettier-ignore
@@ -56,11 +46,9 @@ const MutantTile = (props) => {
 		// prettier-ignore
 		const actionFunction = props.action === ACTION_TYPES.CREATE
 			? () => createLab()
-			: props.action === ACTION_TYPES.EXTRACT 
-				? () => extractDna()
-				: props.action === ACTION_TYPES.STAKE
-					? () => stakeMutant()
-					: () => unstakeMutant()
+			: props.action === ACTION_TYPES.STAKE
+				? () => stakeMutant()
+				: () => unstakeMutant()
 		setAction(() => actionFunction)
 	}, [])
 
@@ -130,48 +118,6 @@ const MutantTile = (props) => {
 		})
 	}
 
-	const extractDna = async () => {
-		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
-		const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
-		const stakingContract = new ethers.Contract(mutant.labAddress, abis.extractorLab, signer)
-		const filter = scalesContract.filters.Approval(signer._address, mutant.labAddress, null)
-
-		scalesContract.once(filter, async () => {
-			scalesContract.off(filter)
-			const extractionFilter = dnaContract.filters.ExtractionComplete(mutant.tokenId, null, null, null)
-
-			dnaContract.once(extractionFilter, (mutantId, batchId, boostId, results) => {
-				dnaContract.off(extractionFilter)
-				console.log(results)
-				actionButtonRef.current.disabled = true
-				setLoading(false)
-			})
-			await stakingContract.extractDna(mutant.tokenId, 0).catch((error) => {
-				console.log(error)
-				setLoading(false)
-			})
-		})
-
-		const canExtract = await dnaContract.isCooledDown(mutant.tokenId).catch((error) => {
-			console.log(error)
-			setLoading(false)
-		})
-		if (canExtract) {
-			setLoading(true)
-			const totalCost = await stakingContract.getFee().then(async (fee) => {
-				const extractCost = await stakingContract.getExtractionCost()
-				return (Number(fee) + Number(extractCost)).toString()
-			})
-			await scalesContract.approve(mutant.labAddress, totalCost).catch((error) => {
-				console.log(error)
-				setLoading(false)
-			})
-		} else {
-			// toast: mutant is not cooled down
-			console.log("not cooled down")
-		}
-	}
-
 	return (
 		<>
 			<div id={`mutantTile${mutant.tokenId}`} key={mutant.tokenId} className="rounded-lg bg-gray-200 p-1 m-2">
@@ -207,7 +153,7 @@ const MutantTile = (props) => {
 					/>
 					<button
 						ref={actionButtonRef}
-						disabled={!signer || (props.action === "Extract" && !mutant.canExtract)}
+						disabled={!signer}
 						type="button"
 						className={`${styles.button} w-full disabled:opacity-50`}
 						onClick={action}
