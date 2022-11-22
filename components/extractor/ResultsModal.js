@@ -50,7 +50,7 @@ const ResultsModal = ({ results, transferDna }) => {
 						className={actionButtonClass}
 						onClick={() => {
 							transferDna()
-							props.setOpen(false)
+							setOpen(false)
 						}}
 					>
 						Transfer
