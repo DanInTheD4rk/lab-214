@@ -23,6 +23,7 @@ const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
+const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
 
 const getTierColor = (tier) => {
 	// prettier-ignore
@@ -34,12 +35,12 @@ const getTierColor = (tier) => {
 }
 
 const boostOptions = [
-	{ id: 0, value: 0, name: "Default", probability: "(1%, 4%, 15%, 30%, 50%)" },
-	{ id: 1, value: 200, name: "Basic Boost", probability: "(2%, 8%, 25%, 45%, 20%)" },
-	{ id: 2, value: 100, name: "No Commons", probability: "(1%, 4%, 15%, 80%, 0%)" },
-	{ id: 3, value: 75, name: "50/50 Rare/Common", probability: "(0%, 0%, 50%, 0%, 50%)" },
-	{ id: 4, value: 500, name: "Flattened", probability: "(20%, 20%, 20%, 20%, 20%)" },
-	{ id: 5, value: 750, name: "Always Epic", probability: "(0%, 100%, 0%, 0%, 0%)" },
+	{ id: 0, value: "0", name: "Default", probability: "(1%, 4%, 15%, 30%, 50%)" },
+	{ id: 1, value: "200", name: "Basic Boost", probability: "(2%, 8%, 25%, 45%, 20%)" },
+	{ id: 2, value: "100", name: "No Commons", probability: "(1%, 4%, 15%, 80%, 0%)" },
+	{ id: 3, value: "75", name: "50/50 Rare/Common", probability: "(0%, 0%, 50%, 0%, 50%)" },
+	{ id: 4, value: "500", name: "Flattened", probability: "(20%, 20%, 20%, 20%, 20%)" },
+	{ id: 5, value: "750", name: "Always Epic", probability: "(0%, 100%, 0%, 0%, 0%)" },
 ]
 
 const ExtractTile = (props) => {
@@ -55,33 +56,33 @@ const ExtractTile = (props) => {
 	const canTransfer = mutant.lastExtractor === signer._address && mutant.extractedDnaId !== DEFAULT_DNA_ID
 	const extractCost = mutant.extractionCost && mutant.extractionCost.split(".")[0]
 
-	const extractDna = async () => {
+	const extractDna = async (boostOption) => {
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
 		const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
 		const stakingContract = new ethers.Contract(mutant.labAddress, abis.extractorLab, signer)
 		const filter = scalesContract.filters.Approval(signer._address, mutant.labAddress, null)
-		// const rwasteContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
+		const rwasteContract = new ethers.Contract(RWASTE_CONTRACT, abis.rwaste, signer)
 
-		scalesContract.once(filter, async () => {
-			scalesContract.off(filter)
-			const extractionFilter = dnaContract.filters.ExtractionComplete(mutant.tokenId, null, null, null)
+		// scalesContract.once(filter, async () => {
+		// 	scalesContract.off(filter)
+		const extractionFilter = dnaContract.filters.ExtractionComplete(mutant.tokenId, null, null, null)
 
-			dnaContract.once(extractionFilter, (mutantId, batchId, boostId, results) => {
-				dnaContract.off(extractionFilter)
-				const resultsModalInfo = {
-					title: "Extraction Results",
-					component: <ResultsModal results={results} transferDna={() => transferDna(mutant)} />,
-				}
-				setContents(resultsModalInfo)
-				actionButtonRef.current.disabled = true
-				setLoading(false)
-				setOpen(true)
-			})
-			await stakingContract.extractDna(mutant.tokenId, 0).catch((error) => {
-				console.log(error)
-				setLoading(false)
-			})
+		dnaContract.once(extractionFilter, (mutantId, batchId, boostId, results) => {
+			dnaContract.off(extractionFilter)
+			const resultsModalInfo = {
+				title: "Extraction Results",
+				component: <ResultsModal results={results} transferDna={() => transferDna(mutant)} />,
+			}
+			setContents(resultsModalInfo)
+			actionButtonRef.current.disabled = true
+			setLoading(false)
+			setOpen(true)
 		})
+		// 	await stakingContract.extractDna(mutant.tokenId, 0).catch((error) => {
+		// 		console.log(error)
+		// 		setLoading(false)
+		// 	})
+		// })
 
 		const canExtract = await dnaContract.isCooledDown(mutant.tokenId).catch((error) => {
 			console.log(error)
@@ -93,16 +94,27 @@ const ExtractTile = (props) => {
 				const extractCost = await stakingContract.getExtractionCost()
 				return (Number(fee) + Number(extractCost)).toString()
 			})
-			await scalesContract.approve(mutant.labAddress, totalCost).catch((error) => {
+
+			const scalesPromise = await scalesContract.approve(mutant.labAddress, totalCost).catch((error) => {
 				console.log(error)
 				setLoading(false)
 			})
-			// if (boostId > 0) {
-			// 	await rwasteContract.approve(mutant.labAddress, boostOption.value).catch((error) => {
-			// 		console.log(error)
-			// 		setLoading(false)
-			// 	})
-			// }
+			const rwastePromise =
+				boostOption.id > 0
+					? await rwasteContract
+							.approve(mutant.labAddress, ethers.utils.parseEther(boostOption.value))
+							.catch((error) => {
+								console.log(error)
+								setLoading(false)
+							})
+					: new Promise()
+
+			Promise.all([scalesPromise, rwastePromise]).then(async () => {
+				await stakingContract.extractDna(mutant.tokenId, boostOption.id).catch((error) => {
+					console.log(error)
+					setLoading(false)
+				})
+			})
 		} else {
 			// toast: mutant is not cooled down
 			console.log("not cooled down")
@@ -213,7 +225,7 @@ const ModalComponent = ({ extractCost, extractDna }) => {
 					className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-700 hover:opacity-80 px-4 py-2 text-base font-medium
 						text-white leading-tight uppercase shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
 					onClick={() => {
-						extractDna(boostOption.id)
+						extractDna(boostOption)
 						setOpen(false)
 					}}
 				>

@@ -73,6 +73,7 @@ const DnaExtractor = () => {
 		const mutantId = 2
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
 		const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
+		const rwasteContract = new ethers.Contract(RWASTE_CONTRACT, abis.rwaste, signer)
 		// const tx = await scalesContract.approve(DNA_CONTRACT, ethers.utils.parseEther("600"))
 		// await tx.wait(6)
 		// await contracts.mutant.approve(signer._address, mutantId)
@@ -81,7 +82,8 @@ const DnaExtractor = () => {
 		// console.log("mutant upgraded")
 
 		await scalesContract.withdraw()
-		console.log("scales added!")
+		await rwasteContract.claimReward()
+		console.log("scales/rwaste added!")
 	}
 
 	const mint = async () => {
