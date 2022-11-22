@@ -13,3 +13,5 @@ export const MUTANT_TIERS = {
 	5: "A",
 	6: "S",
 }
+
+export const DEFAULT_DNA_ID = 99
