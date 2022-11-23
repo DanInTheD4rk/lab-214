@@ -67,20 +67,24 @@ const DnaExtractor = () => {
 	// }, [ownedMutants])
 
 	const upgrade = async () => {
-		const mutantId = 2
+		/* #######################
+		UPGRADE MUTANT
+		########################## */
+		const mutantId = 1
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
+		await dnaContract.upgradeMutant(mutantId, 6)
+
 		const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
 		const rwasteContract = new ethers.Contract(RWASTE_CONTRACT, abis.rwaste, signer)
 		// const tx = await scalesContract.approve(DNA_CONTRACT, ethers.utils.parseEther("600"))
 		// await tx.wait(6)
 		// await contracts.mutant.approve(signer._address, mutantId)
 		// let mutantCount = await contracts.mutant.upgrade(mutantId)
-		// await dnaContract.upgradeMutant(mutantId, 6)
 		// console.log("mutant upgraded")
 
-		await scalesContract.withdraw()
-		await rwasteContract.claimReward()
-		console.log("scales/rwaste added!")
+		// await scalesContract.withdraw()
+		// await rwasteContract.claimReward()
+		// console.log("scales/rwaste added!")
 	}
 
 	const mint = async () => {
@@ -104,21 +108,34 @@ const DnaExtractor = () => {
 		// await scalesContract.withdraw()
 		// console.log("scales added!")
 
-		await factoryContract.setContracts([DNA_CONTRACT, RWASTE_CONTRACT, SCALES_CONTRACT, MUTANT_CONTRACT])
-		await extractorContract.setContracts([DNA_CONTRACT, RWASTE_CONTRACT, SCALES_CONTRACT, MUTANT_CONTRACT])
-		// mutantCount = await contracts.mutant.revealed()
-		// console.log(mutantCount)
-		// // mutantCount = await contracts.mutant.setBaseTokenURI("https://mutant-kaiju-api-2g83z.ondigitalocean.app/mutant/")
-		// // console.log(mutantCount)
-		// mutantCount = await contracts.mutant.tokenURI(0)
-		// console.log(mutantCount)
-		// try {
-		// 	// await contracts.mutant.mint(1, ethers.utils.parseEther("0.06666"))
-		// 	await contracts.mutant.mint(1, { value: ethers.utils.parseEther("0.06666") })
-		// } catch (error) {
-		// 	console.log("Transaction canceled")
-		// 	console.log(error)
-		// }
+		/* #######################
+		ASSIGN CONTRACTS/ROLES
+		########################## */
+		// await rwasteContract.setAllowedAddresses(DNA_CONTRACT, true)
+		// await scalesContract.grantRole("0x7434c6f201a551bfd17336985361933e0c4935b520dac8a49d937b325f7d5c0a", DNA_CONTRACT)
+		// await dnaContract.setContracts([MUTANT_CONTRACT, RWASTE_CONTRACT, SCALES_CONTRACT])
+		// await factoryContract.setContracts([DNA_CONTRACT, RWASTE_CONTRACT, SCALES_CONTRACT, MUTANT_CONTRACT])
+		// await extractorContract.setContracts([DNA_CONTRACT, RWASTE_CONTRACT, SCALES_CONTRACT, MUTANT_CONTRACT])
+
+		/* #######################
+		SETUP
+		########################## */
+		// await contracts.mutant.flipRevealed()
+		// const revealed = await contracts.mutant.revealed()
+		// console.log(revealed)
+		// await contracts.mutant.setBaseTokenURI("https://mutant-kaiju-api-2g83z.ondigitalocean.app/mutant/")
+
+		/* #######################
+		MINT MUTANT
+		########################## */
+
+		try {
+			// await contracts.mutant.mint(1, ethers.utils.parseEther("0.06666"))
+			await contracts.mutant.mint(1, { value: ethers.utils.parseEther("0.06666") })
+		} catch (error) {
+			console.log("Transaction canceled")
+			console.log(error)
+		}
 	}
 
 	return (
