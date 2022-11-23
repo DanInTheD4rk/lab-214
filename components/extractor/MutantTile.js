@@ -78,25 +78,22 @@ const MutantTile = ({ mutant, action }) => {
 		const mutantContract = new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer)
 		const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
 		const stakingAddress = await factoryContract.mutantToLab(mutant.tokenId)
-		const owner = await mutantContract.ownerOf(mutant.tokenId)
 
-		const filter = mutantContract.filters.Approval(owner, mutant.labAddress, mutant.tokenId)
-		mutantContract.once(filter, async (_, approvedAddress, tokenId) => {
-			mutantContract.off(filter)
-			const stakingContract = new ethers.Contract(approvedAddress, abis.extractorLab, signer)
-			stakingContract.once("Staked", () => {
-				actionButtonRef.current.innerText = "Unstake"
-				setActionFunc(() => unstakeMutant)
-				imgRef.current.src = failedExperiment.src
-				setLoading(false)
-			})
-			await stakingContract.stakeMutant(tokenId.toString()).catch((error) => {
-				console.log(error)
-				setLoading(false)
-			})
+		const stakingContract = new ethers.Contract(stakingAddress, abis.extractorLab, signer)
+		const filter = stakingContract.filters.Staked(mutant.tokenId, null)
+		stakingContract.once(filter, () => {
+			stakingContract.off(filter)
+			actionButtonRef.current.innerText = "Unstake"
+			setActionFunc(() => unstakeMutant)
+			imgRef.current.src = failedExperiment.src
+			setLoading(false)
 		})
 
 		await mutantContract.approve(stakingAddress, mutant.tokenId).catch((error) => {
+			console.log(error)
+			setLoading(false)
+		})
+		await stakingContract.stakeMutant(mutant.tokenId).catch((error) => {
 			console.log(error)
 			setLoading(false)
 		})
