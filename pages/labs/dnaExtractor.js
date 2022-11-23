@@ -41,9 +41,6 @@ const DnaExtractor = () => {
 			await newProvider.send("eth_requestAccounts", [])
 			let signer = newProvider.getSigner()
 			setSignerAddress(await signer.getAddress())
-			console.log(newProvider)
-			console.log(signer)
-			console.log(signerAddress)
 			// setContract(new ethers.Contract("0xa513e6e4b8f2a923d98304ec87f64353c4d5c853", abis.mutant, signer))
 			setContracts({
 				mutant: new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer),

@@ -30,8 +30,7 @@ const getTierColor = (tier) => {
 			: "bg-red-700"
 }
 
-const MutantTile = (props) => {
-	const mutant = props.mutant
+const MutantTile = ({ mutant, action }) => {
 	const { setLoading: setLoading } = useLoading()
 	let tierColor = getTierColor(mutant.tier)
 	const tierRef = useRef(null)
@@ -40,25 +39,37 @@ const MutantTile = (props) => {
 	const actionButtonRef = useRef(null)
 	const { data: signer } = useSigner()
 	const mutantContract = new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer)
-	const [action, setAction] = useState(null)
+	const [actionFunc, setActionFunc] = useState(null)
 
 	useEffect(() => {
 		// prettier-ignore
-		const actionFunction = props.action === ACTION_TYPES.CREATE
+		const actionFunction = action === ACTION_TYPES.CREATE
 			? () => createLab()
-			: props.action === ACTION_TYPES.STAKE
+			: action === ACTION_TYPES.STAKE
 				? () => stakeMutant()
 				: () => unstakeMutant()
-		setAction(() => actionFunction)
+		setActionFunc(() => actionFunction)
 	}, [])
 
 	const createLab = async () => {
 		setLoading(true)
 		const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
+		const filter = factoryContract.filters.LabCreated(mutant.tokenId, null)
+
+		factoryContract.once(filter, async () => {
+			factoryContract.off(filter)
+			actionButtonRef.current.innerText = "Stake"
+			setActionFunc(() => stakeMutant)
+			actionButtonRef.current.disabled = false
+			setLoading(false)
+		})
+
 		await factoryContract.createLab(mutant.tokenId).catch((error) => {
 			console.log(error)
 			setLoading(false)
 		})
+		actionButtonRef.current.disabled = true
+		actionButtonRef.current.innerText = "Creating..."
 		setLoading(false)
 	}
 
@@ -75,7 +86,7 @@ const MutantTile = (props) => {
 			const stakingContract = new ethers.Contract(approvedAddress, abis.extractorLab, signer)
 			stakingContract.once("Staked", () => {
 				actionButtonRef.current.innerText = "Unstake"
-				setAction(() => unstakeMutant)
+				setActionFunc(() => unstakeMutant)
 				imgRef.current.src = failedExperiment.src
 				setLoading(false)
 			})
@@ -97,7 +108,7 @@ const MutantTile = (props) => {
 		stakingContract.once(filter, async () => {
 			mutantContract.off(filter)
 			actionButtonRef.current.innerText = "Stake"
-			setAction(() => stakeMutant)
+			setActionFunc(() => stakeMutant)
 			await mutantContract.tokenURI(mutant.tokenId).then((uri) => {
 				fetch(uri)
 					.then((resp) => resp.json())
@@ -156,9 +167,9 @@ const MutantTile = (props) => {
 						disabled={!signer}
 						type="button"
 						className={`${styles.button} w-full disabled:opacity-50`}
-						onClick={action}
+						onClick={actionFunc}
 					>
-						{props.action}
+						{action}
 					</button>
 				</div>
 			</div>
