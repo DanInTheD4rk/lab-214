@@ -41,9 +41,6 @@ const DnaExtractor = () => {
 			await newProvider.send("eth_requestAccounts", [])
 			let signer = newProvider.getSigner()
 			setSignerAddress(await signer.getAddress())
-			console.log(newProvider)
-			console.log(signer)
-			console.log(signerAddress)
 			// setContract(new ethers.Contract("0xa513e6e4b8f2a923d98304ec87f64353c4d5c853", abis.mutant, signer))
 			setContracts({
 				mutant: new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer),
@@ -73,6 +70,7 @@ const DnaExtractor = () => {
 		const mutantId = 2
 		const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
 		const scalesContract = new ethers.Contract(SCALES_CONTRACT, abis.scales, signer)
+		const rwasteContract = new ethers.Contract(RWASTE_CONTRACT, abis.rwaste, signer)
 		// const tx = await scalesContract.approve(DNA_CONTRACT, ethers.utils.parseEther("600"))
 		// await tx.wait(6)
 		// await contracts.mutant.approve(signer._address, mutantId)
@@ -81,7 +79,8 @@ const DnaExtractor = () => {
 		// console.log("mutant upgraded")
 
 		await scalesContract.withdraw()
-		console.log("scales added!")
+		await rwasteContract.claimReward()
+		console.log("scales/rwaste added!")
 	}
 
 	const mint = async () => {

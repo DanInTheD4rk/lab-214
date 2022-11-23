@@ -1957,19 +1957,6 @@ const abis = {
 		},
 		{
 			inputs: [],
-			name: "getExtractionCost",
-			outputs: [
-				{
-					internalType: "uint256",
-					name: "",
-					type: "uint256",
-				},
-			],
-			stateMutability: "view",
-			type: "function",
-		},
-		{
-			inputs: [],
 			name: "getFee",
 			outputs: [
 				{
@@ -2028,6 +2015,19 @@ const abis = {
 					internalType: "bool",
 					name: "",
 					type: "bool",
+				},
+			],
+			stateMutability: "view",
+			type: "function",
+		},
+		{
+			inputs: [],
+			name: "getTotalExtractionCost",
+			outputs: [
+				{
+					internalType: "uint256",
+					name: "",
+					type: "uint256",
 				},
 			],
 			stateMutability: "view",

@@ -59,7 +59,6 @@ const Staking = () => {
 					})
 					.then((nfts) => {
 						const ownedMutants = nfts.ownedNfts.concat(ownedStakedMutants)
-						console.log(ownedMutants)
 						Promise.all(
 							ownedMutants.map(async (mutant) => {
 								const labAddress = await factoryContract.mutantToLab(mutant.tokenId)
@@ -106,7 +105,7 @@ const Staking = () => {
 	if (signer) {
 		return (
 			<div>
-				<div className="flex flex-row justify-center mb-3">
+				{/* <div className="flex flex-row justify-center mb-3">
 					<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("staked!")}>
 						Stake All
 					</button>
@@ -119,7 +118,7 @@ const Staking = () => {
 					<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("unstaked!")}>
 						Unstake Selected
 					</button>
-				</div>
+				</div> */}
 				<div className="flex flex-row flex-wrap justify-center">{mutantTiles && [...Object.values(mutantTiles)]}</div>
 			</div>
 		)

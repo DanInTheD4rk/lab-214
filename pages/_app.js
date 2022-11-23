@@ -13,7 +13,6 @@ import Layout from "../components/Layout"
 import { LoadingProvider } from "../components/LoadingContext"
 import { ModalProvider } from "../components/ModalContext"
 
-console.log(process.env.ALCHEMY_ID)
 const { chains, provider } = configureChains(
 	[chain.mainnet, chain.goerli],
 	// [chain.mainnet, chain.goerli, chain.hardhat],
