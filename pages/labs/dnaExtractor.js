@@ -16,31 +16,33 @@ const styles = {
 	// "nav-link w-full block font-medium text-xs leading-tight uppercase border-x-0 border-t-0 border-b-2 border-transparent px-6 py-3 my-2 hover:border-transparent hover:bg-gray-100 focus:border-transparent",
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
+const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
+const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
+const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
+const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
+const EXTRACTOR_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_CONTRACT
+const NETWORK = process.env.NEXT_PUBLIC_NETWORK
+const ALCHEMY_ID = process.env.ALCHEMY_ID
+
 const DnaExtractor = () => {
 	const [openTab, setOpenTab] = useState(1)
 
 	const [contracts, setContracts] = useState(null)
-	const [signerAddress, setSignerAddress] = useState(null)
 	const [provider, setProvider] = useState()
 	const [ownedMutants, setOwnedMutants] = useState([])
 
 	const { data: signer, isError, isLoading } = useSigner()
 
-	const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
-	const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
-	const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
-	const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
-	const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
-	const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
-	const EXTRACTOR_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_CONTRACT
-
 	useEffect(() => {
+		setProvider(new ethers.providers.AlchemyProvider(NETWORK, ALCHEMY_ID))
 		;(async () => {
-			const newProvider = new ethers.providers.Web3Provider(window.ethereum)
-			setProvider(newProvider)
-			await newProvider.send("eth_requestAccounts", [])
-			let signer = newProvider.getSigner()
-			setSignerAddress(await signer.getAddress())
+			// const newProvider = new ethers.providers.Web3Provider(window.ethereum)
+			// setProvider(newProvider)
+			// await newProvider.send("eth_requestAccounts", [])
+			// let signer = newProvider.getSigner()
+			// setSignerAddress(await signer.getAddress())
 			// setContract(new ethers.Contract("0xa513e6e4b8f2a923d98304ec87f64353c4d5c853", abis.mutant, signer))
 			setContracts({
 				mutant: new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer),
@@ -130,7 +132,6 @@ const DnaExtractor = () => {
 		########################## */
 
 		try {
-			// await contracts.mutant.mint(1, ethers.utils.parseEther("0.06666"))
 			await contracts.mutant.mint(1, { value: ethers.utils.parseEther("0.06666") })
 		} catch (error) {
 			console.log("Transaction canceled")
@@ -139,14 +140,14 @@ const DnaExtractor = () => {
 	}
 
 	return (
-		<div className="mx-10">
-			<button type="button" className={`m-10 ${styles.button} w-fit`} onClick={mint}>
+		<div className="mx-10 mt-20">
+			{/* <button type="button" className={`m-10 ${styles.button} w-fit`} onClick={mint}>
 				Mint
 			</button>
 
 			<button type="button" className={`m-10 ${styles.button} w-fit`} onClick={upgrade}>
 				Upgrade
-			</button>
+			</button> */}
 
 			<div className="flex flex-wrap">
 				<div className="w-full">
@@ -190,10 +191,10 @@ const DnaExtractor = () => {
 						<div className="px-4 py-5 flex-auto">
 							<div className="tab-content tab-space">
 								<div className={openTab === 1 ? "block" : "hidden"} id="link1">
-									<Extraction />
+									<Extraction provider={provider} />
 								</div>
 								<div className={openTab === 2 ? "block" : "hidden"} id="link2">
-									{!isLoading && <Staking />}
+									{!isLoading && <Staking provider={provider} />}
 								</div>
 							</div>
 						</div>

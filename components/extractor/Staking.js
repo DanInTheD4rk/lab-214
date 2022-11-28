@@ -19,7 +19,7 @@ const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 
-const Staking = () => {
+const Staking = ({ provider: provider }) => {
 	const [mutantTiles, setMutantTiles] = useState(null)
 	const [ownedMutants, setOwnedMutants] = useState([])
 	/* 
@@ -30,55 +30,57 @@ const Staking = () => {
 	const { data: signer, isError, isLoading } = useSigner() //signer._address
 
 	useEffect(() => {
-		if (!isLoading && signer) {
+		if (provider && !isLoading && signer) {
 			const signerAddress = signer._address
-			const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
-			const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
+			const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, provider)
+			const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, provider)
 
 			;(async () => {
-				const ownedStakedMutants = []
 				const labMutantIds = await factoryContract.getMutantIds()
-				labMutantIds.forEach((labMutantId) => {
-					factoryContract.mutantToLab(labMutantId).then(async (labAddress) => {
-						const stakeContract = new ethers.Contract(labAddress, abis.extractorLab, signer)
-						const contractMutantOwner = await stakeContract.getMutantOwner()
-						if (contractMutantOwner === signer._address) {
-							const ownedStakedMutant = {
-								tokenId: labMutantId.toString(),
-								labAddress: labAddress,
-								isStaked: true,
+				Promise.all(
+					labMutantIds.map(async (labMutantId) => {
+						return factoryContract.mutantToLab(labMutantId).then(async (labAddress) => {
+							const stakeContract = new ethers.Contract(labAddress, abis.extractorLab, provider)
+							const contractMutantOwner = await stakeContract.getMutantOwner()
+							if (contractMutantOwner === signer._address) {
+								return {
+									tokenId: labMutantId.toString(),
+									labAddress: labAddress,
+									isStaked: true,
+								}
+							} else {
+								return {}
 							}
-							ownedStakedMutants.push(ownedStakedMutant)
-						}
+						})
 					})
-				})
-
-				alchemy.nft
-					.getNftsForOwner(signerAddress, {
-						contractAddresses: [MUTANT_CONTRACT],
-					})
-					.then((nfts) => {
-						const ownedMutants = nfts.ownedNfts.concat(ownedStakedMutants)
-						Promise.all(
-							ownedMutants.map(async (mutant) => {
-								const labAddress = await factoryContract.mutantToLab(mutant.tokenId)
-								return await dnaContract.mutantInfo(mutant.tokenId).then((mutantInfo) => {
-									mutant.tier = mutantInfo.tier
-									mutant.canStake = !(mutantInfo.coolDownStarted || mutantInfo.extractionOngoing)
-									mutant.labAddress = labAddress
-									return mutant
+				).then((ownedStakedMutants) => {
+					alchemy.nft
+						.getNftsForOwner(signerAddress, {
+							contractAddresses: [MUTANT_CONTRACT],
+						})
+						.then((nfts) => {
+							const ownedMutants = nfts.ownedNfts.concat(ownedStakedMutants.filter((mutant) => mutant.labAddress))
+							Promise.all(
+								ownedMutants.map(async (mutant) => {
+									const labAddress = await factoryContract.mutantToLab(mutant.tokenId)
+									return await dnaContract.mutantInfo(mutant.tokenId).then((mutantInfo) => {
+										mutant.tier = mutantInfo.tier
+										mutant.canStake = !(mutantInfo.coolDownStarted || mutantInfo.extractionOngoing)
+										mutant.labAddress = labAddress
+										return mutant
+									})
 								})
-							})
-						)
-							.then(setOwnedMutants)
-							.catch((error) => {
-								// enter your logic for when there is an error (ex. error toast)
-								console.log(error)
-							})
-					})
+							)
+								.then(setOwnedMutants)
+								.catch((error) => {
+									// enter your logic for when there is an error (ex. error toast)
+									console.log(error)
+								})
+						})
+				})
 			})()
 		}
-	}, [isLoading, signer])
+	}, [provider, isLoading, signer])
 
 	useEffect(() => {
 		const tiles = {}

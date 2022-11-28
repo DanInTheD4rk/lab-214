@@ -6,11 +6,12 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import Link from "next/link"
 import Spinner from "./Spinner"
 import { useLoading } from "./LoadingContext"
+import temp from "../public/temp.png"
 
 const navigation = [
-	{ name: "Community", href: "#", current: false },
-	{ name: "Learn", href: "#", current: false },
-	{ name: "About", href: "/about", current: false },
+	// { name: "Community", href: "#", current: false },
+	// { name: "Learn", href: "#", current: false },
+	// { name: "About", href: "/about", current: false },
 ]
 
 const labs = [
@@ -49,16 +50,8 @@ export default function Example() {
 								<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
 									<div className="flex flex-shrink-0 items-center">
 										<Link href="/">
-											<img
-												className="block h-8 w-auto lg:hidden"
-												src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-												alt="Your Company"
-											/>
-											<img
-												className="hidden h-8 w-auto lg:block"
-												src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-												alt="Your Company"
-											/>
+											<img className="block h-8 w-auto lg:hidden" src={temp.src} alt="Your Company" />
+											<img className="hidden h-8 w-auto lg:block" src={temp.src} alt="Your Company" />
 										</Link>
 									</div>
 									<div className="hidden sm:ml-6 sm:block">
