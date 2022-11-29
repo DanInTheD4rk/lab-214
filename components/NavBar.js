@@ -133,7 +133,37 @@ export default function Example() {
 							</div>
 						</div>
 
-						<Disclosure.Panel className="sm:hidden">
+						<Disclosure.Panel className="sm:hidden bg-slate-900 h-80">
+							<Disclosure>
+								<Disclosure.Button className="pt-2 px-5 font-bold text-white flex flex-row items-center justify-center">
+									Labs
+									<ChevronDownIcon
+										className={classNames(
+											open ? "text-gray-300" : "text-gray-300",
+											"mt-1 ml-2 h-5 w-5 group-hover:text-gray-700"
+										)}
+										aria-hidden="true"
+									/>
+								</Disclosure.Button>
+								<Disclosure.Panel className="text-gray-500">
+									<div className="overflow-hidden m-4 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+										<div className="relative grid gap-6 bg-slate-800 px-5 py-6 sm:gap-8 sm:p-8">
+											{labs.map((lab) => (
+												<a
+													key={lab.name}
+													href={lab.href}
+													className="-m-3 flex items-start rounded-lg p-3 hover:bg-gray-700"
+												>
+													<div className="ml-4">
+														<p className="text-base font-medium text-white">{lab.name}</p>
+														<p className="mt-1 text-sm text-gray-300">{lab.description}</p>
+													</div>
+												</a>
+											))}
+										</div>
+									</div>
+								</Disclosure.Panel>
+							</Disclosure>
 							<div className="space-y-1 px-2 pt-2 pb-3">
 								{navigation.map((item) => (
 									<Disclosure.Button
