@@ -140,8 +140,9 @@ const DnaExtractor = () => {
 	}
 
 	return (
-		<div className="mx-10 mt-20">
-			{/* <button type="button" className={`m-10 ${styles.button} w-fit`} onClick={mint}>
+		<>
+			<div className="mx-10 mt-20">
+				{/* <button type="button" className={`m-10 ${styles.button} w-fit`} onClick={mint}>
 				Mint
 			</button>
 
@@ -149,59 +150,60 @@ const DnaExtractor = () => {
 				Upgrade
 			</button> */}
 
-			<div className="flex flex-wrap">
-				<div className="w-full">
-					<ul className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row" role="tablist">
-						<li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
-							<a
-								className={
-									"text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-									(openTab === 1 ? "text-white bg-slate-600" : "text-slate-600 bg-white")
-								}
-								onClick={(e) => {
-									e.preventDefault()
-									setOpenTab(1)
-								}}
-								data-toggle="tab"
-								href="#link1"
-								role="tablist"
-							>
-								<i className="fas fa-space-shuttle text-base mr-1"></i> Extraction
-							</a>
-						</li>
-						<li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
-							<a
-								className={
-									"text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-									(openTab === 2 ? "text-white bg-slate-600" : "text-slate-600 bg-white")
-								}
-								onClick={(e) => {
-									e.preventDefault()
-									setOpenTab(2)
-								}}
-								data-toggle="tab"
-								href="#link2"
-								role="tablist"
-							>
-								<i className="fas fa-cog text-base mr-1"></i> Staking
-							</a>
-						</li>
-					</ul>
-					<div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
-						<div className="px-4 py-5 flex-auto">
-							<div className="tab-content tab-space">
-								<div className={openTab === 1 ? "block" : "hidden"} id="link1">
-									<Extraction provider={provider} />
-								</div>
-								<div className={openTab === 2 ? "block" : "hidden"} id="link2">
-									{!isLoading && <Staking provider={provider} />}
+				<div className="flex flex-wrap">
+					<div className="w-full">
+						<ul className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row" role="tablist">
+							<li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+								<a
+									className={
+										"text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
+										(openTab === 1 ? "text-black bg-white bg-opacity-80" : "text-white bg-white bg-opacity-25")
+									}
+									onClick={(e) => {
+										e.preventDefault()
+										setOpenTab(1)
+									}}
+									data-toggle="tab"
+									href="#link1"
+									role="tablist"
+								>
+									<i className="fas fa-space-shuttle text-base mr-1"></i> Extraction
+								</a>
+							</li>
+							<li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+								<a
+									className={
+										"text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
+										(openTab === 2 ? "text-black bg-white bg-opacity-80" : "text-white bg-white bg-opacity-25")
+									}
+									onClick={(e) => {
+										e.preventDefault()
+										setOpenTab(2)
+									}}
+									data-toggle="tab"
+									href="#link2"
+									role="tablist"
+								>
+									<i className="fas fa-cog text-base mr-1"></i> Staking
+								</a>
+							</li>
+						</ul>
+						<div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded bg-opacity-25">
+							<div className="px-4 py-5 flex-auto">
+								<div className="tab-content tab-space">
+									<div className={openTab === 1 ? "block" : "hidden"} id="link1">
+										<Extraction provider={provider} />
+									</div>
+									<div className={openTab === 2 ? "block" : "hidden"} id="link2">
+										{!isLoading && <Staking provider={provider} />}
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	)
 }
 

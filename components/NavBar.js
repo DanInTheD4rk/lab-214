@@ -6,7 +6,7 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import Link from "next/link"
 import Spinner from "./Spinner"
 import { useLoading } from "./LoadingContext"
-import temp from "../public/temp.png"
+import logo from "../public/logoBordered.png"
 
 const navigation = [
 	// { name: "Community", href: "#", current: false },
@@ -31,7 +31,7 @@ export default function Example() {
 	return (
 		<>
 			{loading && <Spinner />}
-			<Disclosure as="nav" className="bg-gray-800">
+			<Disclosure as="nav" className="bg-black-800 z-50 inset-0 absolute w-full h-16">
 				{({ open }) => (
 					<>
 						<div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -49,10 +49,8 @@ export default function Example() {
 								</div>
 								<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
 									<div className="flex flex-shrink-0 items-center">
-										<Link href="/">
-											<img className="block h-8 w-auto lg:hidden" src={temp.src} alt="Your Company" />
-											<img className="hidden h-8 w-auto lg:block" src={temp.src} alt="Your Company" />
-										</Link>
+										<img className="block h-8 w-auto lg:hidden" src={logo.src} alt="Your Company" />
+										<img className="hidden h-8 w-auto lg:block" src={logo.src} alt="Your Company" />
 									</div>
 									<div className="hidden sm:ml-6 sm:block">
 										<div className="flex space-x-4">
@@ -62,7 +60,9 @@ export default function Example() {
 														<>
 															<Popover.Button
 																className={classNames(
-																	open ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white",
+																	open
+																		? "bg-gray-900 text-white"
+																		: "text-gray-300 hover:bg-black hover:text-white hover:opacity-80",
 																	"px-3 py-2 rounded-md text-md font-medium flex items-center"
 																)}
 															>

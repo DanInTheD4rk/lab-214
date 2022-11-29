@@ -125,9 +125,13 @@ const ExtractTile = (props) => {
 
 	return (
 		<>
-			<div id={`mutantTile${mutant.tokenId}`} key={mutant.tokenId} className="rounded-lg bg-gray-200 p-1 m-2">
+			<div
+				id={`mutantTile${mutant.tokenId}`}
+				key={mutant.tokenId}
+				className="rounded-lg bg-black bg-opacity-50 p-1 m-2"
+			>
 				<div className="w-32 m-2">
-					<div className="font-medium text-xs leading-tight uppercase text-center font-bold mb-2">
+					<div className="text-white font-medium text-xs leading-tight uppercase text-center font-bold mb-2">
 						{extractCost} $SCALES
 					</div>
 					<div className="w-full flex justify-center items-center">

@@ -128,7 +128,11 @@ const MutantTile = ({ mutant, action }) => {
 
 	return (
 		<>
-			<div id={`mutantTile${mutant.tokenId}`} key={mutant.tokenId} className="rounded-lg bg-gray-200 p-1 m-2">
+			<div
+				id={`mutantTile${mutant.tokenId}`}
+				key={mutant.tokenId}
+				className="rounded-lg bg-black bg-opacity-50 p-1 m-2"
+			>
 				<div className="w-32 m-2">
 					<div className="w-full flex justify-center items-center">
 						<button
