@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react"
 import ExtractTile from "./ExtractTile"
 import { checkIfZeroAddress } from "../../utils/utils"
-import { useSigner } from "wagmi"
 import { ethers } from "ethers"
 import abis from "../../constants/abisGoerli"
-import { ACTION_TYPES, DEFAULT_DNA_ID } from "../../constants/extractor"
+import { DEFAULT_DNA_ID } from "../../constants/extractor"
 
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 
-const Extraction = () => {
+const Extraction = ({ provider: provider }) => {
 	const [stakedMutants, setStakedMutants] = useState()
 	const [mutantTiles, setMutantTiles] = useState()
-	const { data: signer, isError, isLoading } = useSigner() //signer._address
 
 	useEffect(() => {
-		if (!isLoading && signer) {
-			const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, signer)
-			const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, signer)
+		if (provider) {
+			const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, provider)
+			const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, provider)
 
 			;(async () => {
 				const labMutantIds = await factoryContract.getMutantIds()
@@ -25,7 +23,7 @@ const Extraction = () => {
 					labMutantIds.map((labMutantId) => {
 						let stakedMutant = {}
 						return factoryContract.mutantToLab(labMutantId).then(async (labAddress) => {
-							const stakeContract = new ethers.Contract(labAddress, abis.extractorLab, signer)
+							const stakeContract = new ethers.Contract(labAddress, abis.extractorLab, provider)
 							const contractMutantOwner = await stakeContract.getMutantOwner()
 							if (!checkIfZeroAddress(contractMutantOwner)) {
 								const isCooledDown = await dnaContract.isCooledDown(labMutantId)
@@ -60,7 +58,7 @@ const Extraction = () => {
 				})
 			})()
 		}
-	}, [isLoading, signer])
+	}, [provider])
 
 	useEffect(() => {
 		const tiles = {}
