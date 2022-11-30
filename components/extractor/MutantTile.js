@@ -89,14 +89,23 @@ const MutantTile = ({ mutant, action }) => {
 			setLoading(false)
 		})
 
-		await mutantContract.approve(stakingAddress, mutant.tokenId).catch((error) => {
-			console.log(error)
-			setLoading(false)
-		})
-		await stakingContract.stakeMutant(mutant.tokenId).catch((error) => {
-			console.log(error)
-			setLoading(false)
-		})
+		const approvedAddress = await mutantContract.getApproved(mutant.tokenId)
+		if (approvedAddress !== stakingAddress) {
+			const approvefilter = mutantContract.filters.Approval(signer._address, stakingAddress, null)
+			mutantContract.once(approvefilter, () => {
+				mutantContract.off(approvefilter)
+				stakeMutant()
+			})
+			await mutantContract.approve(stakingAddress, mutant.tokenId).catch((error) => {
+				console.log(error)
+				setLoading(false)
+			})
+		} else {
+			await stakingContract.stakeMutant(mutant.tokenId).catch((error) => {
+				console.log(error)
+				setLoading(false)
+			})
+		}
 	}
 
 	const unstakeMutant = async () => {
