@@ -63,7 +63,7 @@ export default function NavBar() {
 																className={classNames(
 																	open
 																		? "bg-gray-900 text-white"
-																		: "text-gray-300 hover:bg-black hover:text-white hover:opacity-80",
+																		: "bg-slate-900 bg-opacity-40 text-gray-300 hover:bg-slate-900 hover:text-white hover:bg-opacity-70",
 																	"px-3 py-2 rounded-md text-md font-medium flex items-center"
 																)}
 															>
@@ -71,7 +71,7 @@ export default function NavBar() {
 																<ChevronDownIcon
 																	className={classNames(
 																		open ? "text-gray-300" : "text-gray-300",
-																		"ml-2 h-5 w-5 group-hover:text-gray-700"
+																		"mt-1 ml-2 h-5 w-5 group-hover:text-gray-700"
 																	)}
 																	aria-hidden="true"
 																/>

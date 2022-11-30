@@ -88,9 +88,14 @@ const ExtractTile = (props) => {
 					: Promise.resolve()
 
 			Promise.all([scalesPromise, rwastePromise]).then(async () => {
-				await stakingContract.extractDna(mutant.tokenId, boostOption.id).catch((error) => {
-					console.log(error)
-					setLoading(false)
+				const filterContract = boostOption.id > 0 ? rwasteContract : scalesContract
+				const approveFilter = filterContract.filters.Approval(signer._address, stakingContract.address, null)
+				filterContract.once(approveFilter, async () => {
+					filterContract.off(approveFilter)
+					await stakingContract.extractDna(mutant.tokenId, boostOption.id).catch((error) => {
+						console.log(error)
+						setLoading(false)
+					})
 				})
 			})
 		} else {
