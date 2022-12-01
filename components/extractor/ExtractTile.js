@@ -43,7 +43,7 @@ const ExtractTile = (props) => {
 	const actionButtonRef = useRef(null)
 	const { data: signer } = useSigner()
 	const { open, setOpen, setContents } = useModal()
-	const canTransfer = mutant.lastExtractor === signer && signer._address && mutant.extractedDnaId !== DEFAULT_DNA_ID
+	const canTransfer = mutant.lastExtractor === (signer && signer._address) && mutant.extractedDnaId !== DEFAULT_DNA_ID
 	const extractCost = mutant.extractionCost && mutant.extractionCost.split(".")[0]
 
 	const extractDna = async (boostOption) => {
