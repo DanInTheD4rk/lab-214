@@ -26,8 +26,7 @@ const Staking = ({ provider: provider }) => {
 		Ray: 0x9E29A34dFd3Cb99798E8D88515FEe01f2e4cD5a8 
 		d4rk: 0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d
 	*/
-	// const signerAddress = "0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d"
-	const { data: signer, isError, isLoading } = useSigner() //signer._address
+	const { data: signer, isError, isLoading } = useSigner()
 
 	useEffect(() => {
 		if (provider && !isLoading && signer) {
@@ -42,7 +41,7 @@ const Staking = ({ provider: provider }) => {
 						return factoryContract.mutantToLab(labMutantId).then(async (labAddress) => {
 							const stakeContract = new ethers.Contract(labAddress, abis.extractorLab, provider)
 							const contractMutantOwner = await stakeContract.getMutantOwner()
-							if (contractMutantOwner === signer._address) {
+							if (contractMutantOwner === signerAddress) {
 								return {
 									tokenId: labMutantId.toString(),
 									labAddress: labAddress,
@@ -58,11 +57,15 @@ const Staking = ({ provider: provider }) => {
 						.getNftsForOwner(signerAddress, {
 							contractAddresses: [MUTANT_CONTRACT],
 						})
-						.then((nfts) => {
+						.then(async (nfts) => {
 							const ownedMutants = nfts.ownedNfts.concat(ownedStakedMutants.filter((mutant) => mutant.labAddress))
+							const mutantsWithLab = labMutantIds.map((idObj) => idObj.toString())
+							console.log(mutantsWithLab)
 							Promise.all(
 								ownedMutants.map(async (mutant) => {
-									const labAddress = await factoryContract.mutantToLab(mutant.tokenId)
+									const labAddress = mutantsWithLab.includes(mutant.tokenId)
+										? await factoryContract.mutantToLab(mutant.tokenId)
+										: ethers.constants.AddressZero
 									return await dnaContract.mutantInfo(mutant.tokenId).then((mutantInfo) => {
 										mutant.tier = mutantInfo.tier
 										mutant.canStake = !(mutantInfo.coolDownStarted || mutantInfo.extractionOngoing)

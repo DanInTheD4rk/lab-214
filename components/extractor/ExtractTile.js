@@ -43,7 +43,7 @@ const ExtractTile = (props) => {
 	const actionButtonRef = useRef(null)
 	const { data: signer } = useSigner()
 	const { open, setOpen, setContents } = useModal()
-	const canTransfer = mutant.lastExtractor === signer && signer._address && mutant.extractedDnaId !== DEFAULT_DNA_ID
+	const canTransfer = mutant.lastExtractor === (signer && signer._address) && mutant.extractedDnaId !== DEFAULT_DNA_ID
 	const extractCost = mutant.extractionCost && mutant.extractionCost.split(".")[0]
 
 	const extractDna = async (boostOption) => {
@@ -140,12 +140,8 @@ const ExtractTile = (props) => {
 						{extractCost} $SCALES
 					</div>
 					<div className="w-full flex justify-center items-center">
-						<button
-							disabled
-							type="button"
-							className={`${styles.tierButton + " " + tierColor} opacity-80 font-bold mb-2`}
-						>
-							<div className={"px-1.5 py-1.5 relative"}>
+						<button disabled type="button" className={`${styles.tierButton + " " + tierColor} font-bold mb-2`}>
+							<div className={"px-1.5 py-1.5 "}>
 								<span className="font-bold text-lg mr-2">{mutant.tokenId}</span>{" "}
 								<span ref={tierRef} className="italic">
 									Tier: {MUTANT_TIERS[mutant.tier]}

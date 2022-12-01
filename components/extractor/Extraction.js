@@ -27,7 +27,7 @@ const Extraction = ({ provider: provider }) => {
 							const contractMutantOwner = await stakeContract.getMutantOwner()
 							if (!checkIfZeroAddress(contractMutantOwner)) {
 								const isCooledDown = await dnaContract.isCooledDown(labMutantId)
-								const extractedDnaId = await stakeContract.getExtractedDnaId()
+								const extractedDnaId = !isCooledDown ? await stakeContract.getExtractedDnaId() : DEFAULT_DNA_ID
 								const extractionCost = await stakeContract.getTotalExtractionCost()
 								const lastExtractor =
 									extractedDnaId !== DEFAULT_DNA_ID
