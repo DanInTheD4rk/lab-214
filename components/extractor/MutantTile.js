@@ -145,24 +145,18 @@ const MutantTile = ({ mutant, action }) => {
 				<div className="w-32 m-2">
 					<div className="w-full flex justify-center items-center">
 						<button
-							disabled={!signer}
+							disabled
 							ref={tierButtonRef}
 							type="button"
-							className={`${styles.tierButton + " " + tierColor} opacity-80 font-bold mb-2`}
+							className={`${styles.tierButton + " " + tierColor} font-bold mb-2`}
 							// TODO: remove all the conditional styling for the update button
 							// onClick={() => updateMutant(mutant.tokenId)}
 						>
-							<div className={"px-1.5 py-1.5 relative"}>
+							<div className={"px-1.5 py-1.5"}>
 								<span className="font-bold text-lg mr-2">{mutant.tokenId}</span>{" "}
 								<span ref={tierRef} className="italic">
 									Tier: {MUTANT_TIERS[mutant.tier]}
 								</span>
-								<p
-									className={`px-6 py-3 rounded absolute inset-0 opacity-0 hover:opacity-100 hover:bg-gray-500 z-11 text-white font-bold 
-								${signer ? "" : `hover:opacity-0 hover:${tierColor} active:${tierColor}`}`}
-								>
-									Update
-								</p>
 							</div>
 						</button>
 					</div>

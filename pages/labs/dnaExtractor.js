@@ -7,7 +7,9 @@ import { alchemy } from "../../utils/Alchemy"
 import Staking from "../../components/extractor/Staking"
 import Extraction from "../../components/extractor/Extraction"
 import Toast from "../../components/Toast"
+import AppInfo from "../../components/appInfo/AppInfo"
 import { useContract, useSigner } from "wagmi"
+import Contributor from "../../components/appInfo/Contributor"
 
 const styles = {
 	button:
@@ -25,6 +27,9 @@ const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
 const EXTRACTOR_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_CONTRACT
 const NETWORK = process.env.NEXT_PUBLIC_NETWORK
 const ALCHEMY_ID = process.env.ALCHEMY_ID
+
+const contractInfo = [EXTRACTOR_CONTRACT, FACTORY_CONTRACT]
+const contributors = [<Contributor user="DanInTheD4rk" />]
 
 const DnaExtractor = () => {
 	const [openTab, setOpenTab] = useState(1)
@@ -142,6 +147,7 @@ const DnaExtractor = () => {
 	return (
 		<>
 			<div className="mx-10 mt-20">
+				<AppInfo contracts={contractInfo} contributors={contributors} />
 				{/* <button type="button" className={`m-10 ${styles.button} w-fit`} onClick={mint}>
 				Mint
 			</button>
@@ -188,7 +194,7 @@ const DnaExtractor = () => {
 								</a>
 							</li>
 						</ul>
-						<div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded bg-opacity-25">
+						<div className="unset flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded bg-opacity-25">
 							<div className="px-4 py-5 flex-auto">
 								<div className="tab-content tab-space">
 									<div className={openTab === 1 ? "block" : "hidden"} id="link1">

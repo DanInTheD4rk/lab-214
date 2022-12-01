@@ -42,7 +42,7 @@ const Staking = ({ provider: provider }) => {
 						return factoryContract.mutantToLab(labMutantId).then(async (labAddress) => {
 							const stakeContract = new ethers.Contract(labAddress, abis.extractorLab, provider)
 							const contractMutantOwner = await stakeContract.getMutantOwner()
-							if (contractMutantOwner === signer._address) {
+							if (contractMutantOwner === signerAddress) {
 								return {
 									tokenId: labMutantId.toString(),
 									labAddress: labAddress,
