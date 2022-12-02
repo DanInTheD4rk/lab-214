@@ -1,4 +1,5 @@
-import { Disclosure, Transition, Fragment, Popover } from "@headlessui/react"
+import { Fragment } from "react"
+import { Disclosure, Transition } from "@headlessui/react"
 import { InformationCircleIcon } from "@heroicons/react/20/solid"
 
 const styles = {
