@@ -9,7 +9,7 @@ import { useLoading } from "./LoadingContext"
 import logo from "../public/logoBordered.png"
 
 const navigation = [
-	// { name: "Community", href: "#", current: false },
+	{ name: "External Tools", href: "/externalTools", current: false },
 	// { name: "Learn", href: "#", current: false },
 	// { name: "About", href: "/about", current: false },
 ]
@@ -63,7 +63,7 @@ export default function NavBar() {
 																className={classNames(
 																	open
 																		? "bg-gray-900 text-white"
-																		: "bg-slate-900 bg-opacity-40 text-gray-300 hover:bg-slate-900 hover:text-white hover:bg-opacity-70",
+																		: "bg-slate-900 bg-opacity-40 text-white hover:bg-slate-900 hover:text-gray-300 hover:bg-opacity-70",
 																	"px-3 py-2 rounded-md text-md font-medium flex items-center"
 																)}
 															>
@@ -117,7 +117,7 @@ export default function NavBar() {
 													className={classNames(
 														item.current
 															? "bg-gray-900 text-white"
-															: "text-gray-300 hover:bg-gray-700 hover:text-white",
+															: "bg-slate-900 bg-opacity-40 text-white hover:bg-slate-900 hover:text-gray-300 hover:bg-opacity-70",
 														"px-3 py-2 rounded-md text-md font-medium"
 													)}
 													aria-current={item.current ? "page" : undefined}
