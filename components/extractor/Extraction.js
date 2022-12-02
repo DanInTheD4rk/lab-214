@@ -60,7 +60,7 @@ const Extraction = ({ provider: provider }) => {
 				})
 			})()
 		}
-	}, [provider])
+	}, [provider, chain])
 
 	useEffect(() => {
 		const tiles = {}
@@ -76,17 +76,21 @@ const Extraction = ({ provider: provider }) => {
 
 	if (mutantTiles && Object.keys(mutantTiles).length > 0) {
 		return (
-			<div>
+			<>
 				{chain && chain.network !== "goerli" && (
 					<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
 						Coming soon... Please switch to Goerli to test application
 					</div>
 				)}
 				<div className="flex flex-row flex-wrap justify-center">{[...Object.values(mutantTiles)]}</div>
-			</div>
+			</>
 		)
 	} else if (mutantTiles) {
-		return <div className="flex flex-row flex-wrap justify-center text-xl">No mutants available for extraction</div>
+		return (
+			<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
+				No mutants available for extraction
+			</div>
+		)
 	} else {
 		return null
 	}
