@@ -64,7 +64,6 @@ const Staking = ({ provider: provider }) => {
 						.then(async (nfts) => {
 							const ownedMutants = nfts.ownedNfts.concat(ownedStakedMutants.filter((mutant) => mutant.labAddress))
 							const mutantsWithLab = labMutantIds.map((idObj) => idObj.toString())
-							console.log(mutantsWithLab)
 							Promise.all(
 								ownedMutants.map(async (mutant) => {
 									const labAddress = mutantsWithLab.includes(mutant.tokenId)
@@ -117,9 +116,8 @@ const Staking = ({ provider: provider }) => {
 				Coming soon... Please switch to Goerli to test application
 			</div>
 		)
-	}
-	if (signer) {
-		if (mutantTiles.length > 0) {
+	} else if (signer) {
+		if (mutantTiles && Object.keys(mutantTiles).length > 0) {
 			return (
 				<div>
 					{/* <div className="flex flex-row justify-center mb-3">
