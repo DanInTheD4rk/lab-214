@@ -4,6 +4,7 @@ import { checkIfZeroAddress } from "../../utils/utils"
 import { ethers } from "ethers"
 import abis from "../../constants/abisGoerli"
 import { DEFAULT_DNA_ID } from "../../constants/extractor"
+import { useNetwork } from "wagmi"
 
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
@@ -11,6 +12,7 @@ const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 const Extraction = ({ provider: provider }) => {
 	const [stakedMutants, setStakedMutants] = useState()
 	const [mutantTiles, setMutantTiles] = useState()
+	const { chain } = useNetwork()
 
 	useEffect(() => {
 		if (provider) {
@@ -39,7 +41,7 @@ const Extraction = ({ provider: provider }) => {
 										labAddress: labAddress,
 										isStaked: true,
 										tier: mutantInfo.tier,
-										canExtract: isCooledDown,
+										canExtract: chain && chain.network === "goerli" && isCooledDown,
 										lastExtractor: lastExtractor,
 										extractedDnaId: extractedDnaId,
 										extractionCost: ethers.utils.formatEther(extractionCost),
@@ -58,7 +60,7 @@ const Extraction = ({ provider: provider }) => {
 				})
 			})()
 		}
-	}, [provider])
+	}, [provider, chain])
 
 	useEffect(() => {
 		const tiles = {}
@@ -72,14 +74,23 @@ const Extraction = ({ provider: provider }) => {
 		setMutantTiles(tiles)
 	}, [stakedMutants])
 
-	if (mutantTiles && Object.values(mutantTiles).length > 0) {
+	if (mutantTiles && Object.keys(mutantTiles).length > 0) {
 		return (
-			<div>
+			<>
+				{chain && chain.network !== "goerli" && (
+					<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
+						Coming soon... Please switch to Goerli to test application
+					</div>
+				)}
 				<div className="flex flex-row flex-wrap justify-center">{[...Object.values(mutantTiles)]}</div>
-			</div>
+			</>
 		)
 	} else if (mutantTiles) {
-		return <div className="flex flex-row flex-wrap justify-center text-xl">No mutants available for extraction</div>
+		return (
+			<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
+				No mutants available for extraction
+			</div>
+		)
 	} else {
 		return null
 	}
