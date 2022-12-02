@@ -7,6 +7,7 @@ import MutantTile from "./MutantTile"
 import { useSigner, useContractEvent } from "wagmi"
 import { ACTION_TYPES } from "../../constants/extractor"
 import { checkIfZeroAddress } from "../../utils/utils"
+import { useNetwork } from "wagmi"
 
 const styles = {
 	button:
@@ -18,6 +19,8 @@ const styles = {
 const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
+const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
+const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
 
 const Staking = ({ provider: provider }) => {
 	const [mutantTiles, setMutantTiles] = useState(null)
@@ -27,6 +30,7 @@ const Staking = ({ provider: provider }) => {
 		d4rk: 0x66bc5c43fB0De86A638e56e139DdF6EfE13B130d
 	*/
 	const { data: signer, isError, isLoading } = useSigner()
+	const { chain } = useNetwork()
 
 	useEffect(() => {
 		if (provider && !isLoading && signer) {
@@ -107,10 +111,18 @@ const Staking = ({ provider: provider }) => {
 		setMutantTiles(tiles)
 	}, [ownedMutants])
 
-	if (signer) {
+	if (chain && chain.network !== "goerli") {
 		return (
-			<div>
-				{/* <div className="flex flex-row justify-center mb-3">
+			<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
+				Coming soon... Please switch to Goerli to test application
+			</div>
+		)
+	}
+	if (signer) {
+		if (mutantTiles.length > 0) {
+			return (
+				<div>
+					{/* <div className="flex flex-row justify-center mb-3">
 					<button type="button" className={`${styles.button} mx-2`} onClick={() => console.log("staked!")}>
 						Stake All
 					</button>
@@ -124,13 +136,57 @@ const Staking = ({ provider: provider }) => {
 						Unstake Selected
 					</button>
 				</div> */}
-				<div className="flex flex-row flex-wrap justify-center">{mutantTiles && [...Object.values(mutantTiles)]}</div>
+					<div className="flex flex-row flex-wrap justify-center">{mutantTiles && [...Object.values(mutantTiles)]}</div>
+				</div>
+			)
+		} else {
+			return (
+				<>
+					<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
+						No Mutants available for staking
+					</div>
+					<div className="flex items-center justify-center bg-white p-3 bg-opacity-60 rounded-lg mt-2">
+						<div className="flex flex-col flex-wrap items-center justify-center text-xl font-bold w-1/2">
+							For testing on Goerli, use: <br />
+							<a
+								className="text-gray-700 hover:underline"
+								href={`https://goerli.etherscan.io/address/${MUTANT_CONTRACT}#code`}
+							>
+								Mutant contract
+							</a>
+							<br />
+							<a
+								className="text-gray-700 hover:underline"
+								href={`https://goerli.etherscan.io/address/${SCALES_CONTRACT}#code`}
+							>
+								$SCALES contract
+							</a>
+							<br />
+							<a
+								className="text-gray-700 hover:underline"
+								href={`https://goerli.etherscan.io/address/${RWASTE_CONTRACT}#code`}
+							>
+								$RWASTE contract
+							</a>
+							<br />
+							or contact DanInTheD4rk
+						</div>
+					</div>
+				</>
+			)
+		}
+	} else if (isError) {
+		return (
+			<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
+				Unable to retrieve wallet info
 			</div>
 		)
-	} else if (isError) {
-		return <div className="flex flex-row flex-wrap justify-center text-xl">Unable to retrieve wallet info</div>
 	} else {
-		return <div className="flex flex-row flex-wrap justify-center text-xl">Connect wallet to stake mutants</div>
+		return (
+			<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
+				Connect wallet to stake mutants
+			</div>
+		)
 	}
 }
 
