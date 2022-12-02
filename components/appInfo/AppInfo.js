@@ -72,6 +72,7 @@ const AppInfo = ({ contracts = [], contributors = [], auditors = [] }) => {
 									{auditors.length > 0 ? (
 										<div className={styles.infoBlock}>
 											<div className={styles.infoTitle}>Audited By: </div>
+											{contributors.slice(0, 5)}
 										</div>
 									) : null}
 
