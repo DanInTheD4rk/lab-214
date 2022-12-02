@@ -15,7 +15,7 @@ const Extraction = ({ provider: provider }) => {
 	const { chain } = useNetwork()
 
 	useEffect(() => {
-		if (provider && chain) {
+		if (provider) {
 			const dnaContract = new ethers.Contract(DNA_CONTRACT, abis.dna, provider)
 			const factoryContract = new ethers.Contract(FACTORY_CONTRACT, abis.extractorLabFactory, provider)
 
@@ -60,7 +60,7 @@ const Extraction = ({ provider: provider }) => {
 				})
 			})()
 		}
-	}, [provider, chain])
+	}, [provider])
 
 	useEffect(() => {
 		const tiles = {}
@@ -74,7 +74,7 @@ const Extraction = ({ provider: provider }) => {
 		setMutantTiles(tiles)
 	}, [stakedMutants])
 
-	if (mutantTiles && Object.values(mutantTiles).length > 0) {
+	if (mutantTiles && Object.keys(mutantTiles).length > 0) {
 		return (
 			<div>
 				{chain && chain.network !== "goerli" && (
