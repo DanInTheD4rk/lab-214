@@ -13,11 +13,13 @@ import Layout from "../components/Layout"
 import { LoadingProvider } from "../components/LoadingContext"
 import { ModalProvider } from "../components/ModalContext"
 
+const ALCHEMY_ID = process.env.NEXT_PUBLIC_ALCHEMY_ID
+
 const { chains, provider } = configureChains(
 	[chain.mainnet, chain.goerli],
 	// [chain.mainnet, chain.goerli, chain.hardhat],
-	[alchemyProvider({ apiKey: process.env.ALCHEMY_ID })]
-	// [alchemyProvider({ apiKey: process.env.ALCHEMY_ID }), publicProvider()]
+	[alchemyProvider({ apiKey: ALCHEMY_ID })]
+	// [alchemyProvider({ apiKey: ALCHEMY_ID }), publicProvider()]
 )
 
 const connectors = connectorsForWallets([

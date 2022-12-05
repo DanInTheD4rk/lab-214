@@ -18,7 +18,6 @@ const styles = {
 	// "nav-link w-full block font-medium text-xs leading-tight uppercase border-x-0 border-t-0 border-b-2 border-transparent px-6 py-3 my-2 hover:border-transparent hover:bg-gray-100 focus:border-transparent",
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
@@ -26,7 +25,7 @@ const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
 const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
 const EXTRACTOR_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_CONTRACT
 const NETWORK = process.env.NEXT_PUBLIC_NETWORK
-const ALCHEMY_ID = process.env.ALCHEMY_ID
+const ALCHEMY_ID = process.env.NEXT_PUBLIC_ALCHEMY_ID
 
 const contractInfo = [EXTRACTOR_CONTRACT, FACTORY_CONTRACT]
 const contributors = [<Contributor user="DanInTheD4rk" />]

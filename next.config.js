@@ -1,14 +1,14 @@
 /** @type {import('next').NextConfig} */
 require("dotenv").config()
 
-const ALCHEMY_ID = process.env.ALCHEMY_ID
+// const ALCHEMY_ID = process.env.NEXT_PUBLIC_ALCHEMY_ID
 
 const nextConfig = {
 	reactStrictMode: false,
 	swcMinify: true,
-	env: {
-		ALCHEMY_ID: process.env.ALCHEMY_ID,
-	},
+	// env: {
+	// 	ALCHEMY_ID: process.env.ALCHEMY_ID,
+	// },
 }
 
 module.exports = nextConfig
