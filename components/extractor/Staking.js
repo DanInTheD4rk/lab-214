@@ -167,7 +167,7 @@ const Staking = ({ provider: provider }) => {
 								$RWASTE contract
 							</a>
 							<br />
-							or contact DanInTheD4rk
+							For more info contact DanInTheD4rk
 						</div>
 					</div>
 				</>

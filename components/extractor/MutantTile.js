@@ -15,7 +15,6 @@ const styles = {
 		"w-full text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg active:bg-gray-700 active:shadow-lg transition duration-150 ease-in-out",
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
