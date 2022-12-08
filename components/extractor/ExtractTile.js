@@ -94,9 +94,6 @@ const ExtractTile = (props) => {
 				const approveFilter = filterContract.filters.Approval(signer._address, stakingContract.address, null)
 				filterContract.once(approveFilter, async () => {
 					filterContract.off(approveFilter)
-					console.log(totalCost.toString())
-					console.log(ethers.utils.parseEther(EXTRACTION_COST.toString()).toString())
-					console.log(totalCost.sub(ethers.utils.parseEther(EXTRACTION_COST.toString())))
 					await stakingContract
 						.extractDna(
 							mutant.tokenId,
