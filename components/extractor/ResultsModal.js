@@ -70,13 +70,13 @@ const ResultsModal = ({ results, transferDna }) => {
 			<>
 				<div className="flex">
 					<div className="max-h-max px-4">
-						<img className="shadow-lg rounded w-52 h-auto border-none" src={imgSource} />
+						<img className="shadow-lg rounded w-24 h-auto border-none" src={imgSource} />
 					</div>
 
 					<div>
 						<h2 className="font-bold">Experiment Failed!</h2>
-						<p className="mb-3">Extracted DNA is unsuitable for [REDACTED] </p>
-						<p className="italic">This mutant will be available for another extraction in 14 days</p>
+						<p className="mb-4">Extracted DNA is unsuitable for [REDACTED] </p>
+						<p className="italic">Cooldown on this mutant has been reset</p>
 					</div>
 				</div>
 				<div className="mt-3 px-2 py-1 min-w-max sm:flex sm:flex-row-reverse">

@@ -1790,7 +1790,7 @@ const abis = {
 		},
 		{
 			inputs: [],
-			name: "ExtractorLab__IncorrectMutant",
+			name: "ExtractorLab__InvalidTokenAmount",
 			type: "error",
 		},
 		{
@@ -1885,19 +1885,6 @@ const abis = {
 		},
 		{
 			inputs: [],
-			name: "DEFAULT_DNA_ID",
-			outputs: [
-				{
-					internalType: "uint8",
-					name: "",
-					type: "uint8",
-				},
-			],
-			stateMutability: "view",
-			type: "function",
-		},
-		{
-			inputs: [],
 			name: "contracts",
 			outputs: [
 				{
@@ -1936,6 +1923,11 @@ const abis = {
 					name: "boostId",
 					type: "uint16",
 				},
+				{
+					internalType: "uint256",
+					name: "_fee",
+					type: "uint256",
+				},
 			],
 			name: "extractDna",
 			outputs: [],
@@ -1947,9 +1939,9 @@ const abis = {
 			name: "getExtractedDnaId",
 			outputs: [
 				{
-					internalType: "uint256",
+					internalType: "int256",
 					name: "",
-					type: "uint256",
+					type: "int256",
 				},
 			],
 			stateMutability: "view",
@@ -2170,7 +2162,7 @@ const abis = {
 				},
 				{
 					internalType: "uint256",
-					name: "",
+					name: "tokenId",
 					type: "uint256",
 				},
 				{
@@ -2224,41 +2216,6 @@ const abis = {
 		{
 			inputs: [],
 			name: "renounceOwnership",
-			outputs: [],
-			stateMutability: "nonpayable",
-			type: "function",
-		},
-		{
-			inputs: [
-				{
-					components: [
-						{
-							internalType: "contract IDNA",
-							name: "DNA",
-							type: "address",
-						},
-						{
-							internalType: "contract IRWaste",
-							name: "RWaste",
-							type: "address",
-						},
-						{
-							internalType: "contract IScales",
-							name: "Scales",
-							type: "address",
-						},
-						{
-							internalType: "contract IMutants",
-							name: "Mutant",
-							type: "address",
-						},
-					],
-					internalType: "struct KaijuContracts.Contracts",
-					name: "_contracts",
-					type: "tuple",
-				},
-			],
-			name: "setContracts",
 			outputs: [],
 			stateMutability: "nonpayable",
 			type: "function",

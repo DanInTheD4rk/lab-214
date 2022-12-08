@@ -6,7 +6,7 @@ import abis from "../../constants/abisGoerli"
 import abisMainnet from "../../constants/abisMainnet"
 import { Contract, ethers } from "ethers"
 import { useContractEvent, useSigner } from "wagmi"
-import { MUTANT_TIERS, DEFAULT_DNA_ID, BOOST_OPTIONS } from "../../constants/extractor"
+import { MUTANT_TIERS, BOOST_OPTIONS } from "../../constants/extractor"
 import { useLoading } from "../LoadingContext"
 import { useModal } from "../ModalContext"
 import ResultsModal from "./ResultsModal"
@@ -34,6 +34,8 @@ const getTierColor = (tier) => {
 			: "bg-red-700"
 }
 
+const EXTRACTION_COST = 600
+
 const ExtractTile = (props) => {
 	const mutant = props.mutant
 	const { setLoading: setLoading } = useLoading()
@@ -43,7 +45,7 @@ const ExtractTile = (props) => {
 	const actionButtonRef = useRef(null)
 	const { data: signer } = useSigner()
 	const { open, setOpen, setContents } = useModal()
-	const canTransfer = mutant.lastExtractor === (signer && signer._address) && mutant.extractedDnaId !== DEFAULT_DNA_ID
+	const canTransfer = mutant.lastExtractor === (signer && signer._address) && mutant.extractedDnaId >= 0
 	const extractCost = mutant.extractionCost && mutant.extractionCost.split(".")[0]
 
 	const extractDna = async (boostOption) => {
@@ -61,7 +63,7 @@ const ExtractTile = (props) => {
 				component: <ResultsModal results={results} transferDna={() => transferDna(mutant)} />,
 			}
 			setContents(resultsModalInfo)
-			actionButtonRef.current.disabled = true
+			actionButtonRef.current.disabled = results.success
 			setLoading(false)
 			setOpen(true)
 		})
@@ -92,10 +94,19 @@ const ExtractTile = (props) => {
 				const approveFilter = filterContract.filters.Approval(signer._address, stakingContract.address, null)
 				filterContract.once(approveFilter, async () => {
 					filterContract.off(approveFilter)
-					await stakingContract.extractDna(mutant.tokenId, boostOption.id).catch((error) => {
-						console.log(error)
-						setLoading(false)
-					})
+					console.log(totalCost.toString())
+					console.log(ethers.utils.parseEther(EXTRACTION_COST.toString()).toString())
+					console.log(totalCost.sub(ethers.utils.parseEther(EXTRACTION_COST.toString())))
+					await stakingContract
+						.extractDna(
+							mutant.tokenId,
+							boostOption.id,
+							totalCost.sub(ethers.utils.parseEther(EXTRACTION_COST.toString()))
+						)
+						.catch((error) => {
+							console.log(error)
+							setLoading(false)
+						})
 				})
 			})
 		} else {

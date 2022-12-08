@@ -3,7 +3,6 @@ import ExtractTile from "./ExtractTile"
 import { checkIfZeroAddress } from "../../utils/utils"
 import { ethers } from "ethers"
 import abis from "../../constants/abisGoerli"
-import { DEFAULT_DNA_ID } from "../../constants/extractor"
 import { useNetwork } from "wagmi"
 
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
@@ -29,12 +28,10 @@ const Extraction = ({ provider: provider }) => {
 							const contractMutantOwner = await stakeContract.getMutantOwner()
 							if (!checkIfZeroAddress(contractMutantOwner)) {
 								const isCooledDown = await dnaContract.isCooledDown(labMutantId)
-								const extractedDnaId = !isCooledDown ? await stakeContract.getExtractedDnaId() : DEFAULT_DNA_ID
+								const extractedDnaId = !isCooledDown ? await stakeContract.getExtractedDnaId() : -1
 								const extractionCost = await stakeContract.getTotalExtractionCost()
 								const lastExtractor =
-									extractedDnaId !== DEFAULT_DNA_ID
-										? await stakeContract.getLastExtractor()
-										: ethers.constants.AddressZero
+									extractedDnaId >= 0 ? await stakeContract.getLastExtractor() : ethers.constants.AddressZero
 								return await dnaContract.mutantInfo(labMutantId).then((mutantInfo) => {
 									stakedMutant = {
 										tokenId: labMutantId.toString(),
