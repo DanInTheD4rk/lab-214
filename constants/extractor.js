@@ -14,8 +14,6 @@ export const MUTANT_TIERS = {
 	6: "S",
 }
 
-export const DEFAULT_DNA_ID = 99
-
 export const BOOST_OPTIONS = [
 	{ id: 0, value: "0", name: "Default", probability: "(1%, 4%, 15%, 30%, 50%)" },
 	{ id: 1, value: "200", name: "Basic Boost", probability: "(2%, 8%, 25%, 45%, 20%)" },

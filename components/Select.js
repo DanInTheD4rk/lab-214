@@ -14,7 +14,7 @@ const Select = ({ value, setValue, options, className = "", disabled, placeholde
 				>
 					<span className="block truncate">{value ? value.name : placeholder}</span>
 					<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-						<FaChevronDown size="0.80rem" className="text-gray-400" aria-hidden="true" />
+						<FaChevronDown size="12px" className="text-gray-400" aria-hidden="true" />
 					</span>
 				</Listbox.Button>
 				<Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
