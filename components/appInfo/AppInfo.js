@@ -67,20 +67,28 @@ const AppInfo = ({ contracts = [], contributors = [], auditors = [] }) => {
 								<div className="relative grid gap-6 bg-slate-800 px-5 py-6 sm:gap-8 sm:p-8">
 									<div className={styles.infoBlock}>
 										<div className={styles.infoTitle}>Contributors: </div>
-										{contributors.slice(0, 5)}
+										{contributors.slice(0, 5).map((contributor, idx) => (
+											<div key={idx}>{contributor}</div>
+										))}
 									</div>
 
 									{auditors.length > 0 ? (
 										<div className={styles.infoBlock}>
 											<div className={styles.infoTitle}>Audited By: </div>
-											{contributors.slice(0, 5)}
+											{auditors.slice(0, 5).map((auditor, idx) => (
+												<div key={idx}>{auditor}</div>
+											))}
 										</div>
 									) : null}
 
 									{contracts.length > 0 ? (
 										<div className={styles.infoBlock}>
 											<div className={styles.infoTitle + " items-baseline"}>Contracts: </div>
-											<div className="flex flex-col">{contractLinks}</div>
+											<div className="flex flex-col">
+												{contractLinks.map((link, idx) => (
+													<div key={idx}>{link}</div>
+												))}
+											</div>
 										</div>
 									) : null}
 								</div>
