@@ -91,9 +91,7 @@ const ExtractTile = (props) => {
 							})
 					: rwastePromise
 		}
-		console.log(rwasteAllowance + " - " + boostOption.value)
 		if (rwasteAllowance >= boostOption.value && scaleAllowance >= totalCost) {
-			console.log("straight")
 			await stakingContract
 				.extractDna(mutant.tokenId, boostOption.id, totalCost.sub(ethers.utils.parseEther(EXTRACTION_COST.toString())))
 				.catch((error) => {
@@ -101,7 +99,6 @@ const ExtractTile = (props) => {
 					setLoading(false)
 				})
 		} else {
-			console.log("getting approval")
 			Promise.all([scalesPromise, rwastePromise]).then(async () => {
 				const filterContract = boostOption.id > 0 ? rwasteContract : scalesContract
 				const approveFilter = filterContract.filters.Approval(signer._address, stakingContract.address, null)

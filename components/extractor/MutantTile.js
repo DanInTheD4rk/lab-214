@@ -7,6 +7,8 @@ import { Contract, ethers } from "ethers"
 import { useContractEvent, useSigner } from "wagmi"
 import { ACTION_TYPES, MUTANT_TIERS } from "../../constants/extractor"
 import { useLoading } from "../LoadingContext"
+import { useModal } from "../ModalContext"
+import ManageModal from "./ManageModal"
 
 const styles = {
 	button:
@@ -39,6 +41,7 @@ const MutantTile = ({ mutant, action }) => {
 	const { data: signer } = useSigner()
 	const mutantContract = new ethers.Contract(MUTANT_CONTRACT, abis.mutant, signer)
 	const [actionFunc, setActionFunc] = useState(null)
+	const { open, setOpen, setContents } = useModal()
 
 	useEffect(() => {
 		// prettier-ignore
@@ -144,18 +147,36 @@ const MutantTile = ({ mutant, action }) => {
 				<div className="w-32 m-2">
 					<div className="w-full flex justify-center items-center">
 						<button
-							disabled
+							disabled={mutant.labAddress === ethers.constants.AddressZero}
 							ref={tierButtonRef}
 							type="button"
-							className={`${styles.tierButton + " " + tierColor} font-bold mb-2`}
-							// TODO: remove all the conditional styling for the update button
-							// onClick={() => updateMutant(mutant.tokenId)}
+							className={`${styles.tierButton + " " + tierColor} font-bold mb-2 ${
+								mutant.labAddress !== ethers.constants.AddressZero
+									? "hover:bg-gray-600 hover:outline-none outline outline-2 outline-offset-2 outline-indigo-500 "
+									: ""
+							}`}
+							onClick={() => {
+								const resultsModalInfo = {
+									title: "Mutant #" + mutant.tokenId,
+									component: <ManageModal mutant={mutant} />,
+								}
+								setContents(resultsModalInfo)
+								setOpen(true)
+							}}
 						>
-							<div className={"px-1.5 py-1.5"}>
+							<div className={"px-1.5 py-1.5 relative"}>
 								<span className="font-bold text-lg mr-2">{mutant.tokenId}</span>{" "}
 								<span ref={tierRef} className="italic">
 									Tier: {MUTANT_TIERS[mutant.tier]}
 								</span>
+								{mutant.labAddress !== ethers.constants.AddressZero ? (
+									<p
+										className={`px-6 py-3.5 rounded absolute inset-0 opacity-0 hover:opacity-100 hover:bg-gray-500 z-11 text-white font-bold 
+											${signer ? "" : `hover:opacity-0 hover:${tierColor} active:${tierColor}`}`}
+									>
+										Manage
+									</p>
+								) : null}
 							</div>
 						</button>
 					</div>
