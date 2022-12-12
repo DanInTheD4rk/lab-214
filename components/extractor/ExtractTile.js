@@ -68,27 +68,37 @@ const ExtractTile = (props) => {
 			setOpen(true)
 		})
 
-		const canExtract = await dnaContract.isCooledDown(mutant.tokenId).catch((error) => {
-			console.log(error)
-			setLoading(false)
-		})
-		if (canExtract) {
-			setLoading(true)
-			const totalCost = await stakingContract.getTotalExtractionCost()
-			const scalesPromise = await scalesContract.approve(mutant.labAddress, totalCost).catch((error) => {
-				console.log(error)
-				setLoading(false)
-			})
-			const rwastePromise =
-				boostOption.id > 0
+		setLoading(true)
+		const totalCost = await stakingContract.getTotalExtractionCost()
+		const scaleAllowance = await scalesContract.allowance(signer._address, stakingContract.address)
+		const scalesPromise =
+			scaleAllowance < totalCost
+				? await scalesContract.approve(mutant.labAddress, totalCost).catch((error) => {
+						console.log(error)
+						setLoading(false)
+				  })
+				: Promise.resolve()
+		let rwastePromise = Promise.resolve()
+		const rwasteAllowance = await rwasteContract.allowance(signer._address, stakingContract.address)
+		if (boostOption.id > 0) {
+			rwastePromise =
+				rwasteAllowance < boostOption.value
 					? await rwasteContract
 							.approve(mutant.labAddress, ethers.utils.parseEther(boostOption.value))
 							.catch((error) => {
 								console.log(error)
 								setLoading(false)
 							})
-					: Promise.resolve()
-
+					: rwastePromise
+		}
+		if (rwasteAllowance >= boostOption.value && scaleAllowance >= totalCost) {
+			await stakingContract
+				.extractDna(mutant.tokenId, boostOption.id, totalCost.sub(ethers.utils.parseEther(EXTRACTION_COST.toString())))
+				.catch((error) => {
+					console.log(error)
+					setLoading(false)
+				})
+		} else {
 			Promise.all([scalesPromise, rwastePromise]).then(async () => {
 				const filterContract = boostOption.id > 0 ? rwasteContract : scalesContract
 				const approveFilter = filterContract.filters.Approval(signer._address, stakingContract.address, null)
@@ -106,9 +116,6 @@ const ExtractTile = (props) => {
 						})
 				})
 			})
-		} else {
-			// toast: mutant is not cooled down
-			console.log("not cooled down")
 		}
 	}
 
@@ -165,7 +172,7 @@ const ExtractTile = (props) => {
 					/>
 					<button
 						ref={actionButtonRef}
-						disabled={(!signer || !mutant.canExtract) && !canTransfer}
+						disabled={(!signer || !mutant.canExtract) && signer && signer._address !== mutant.mutantOwner}
 						type="button"
 						className={`${styles.button} w-full disabled:opacity-50`}
 						onClick={

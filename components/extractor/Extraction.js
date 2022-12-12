@@ -27,7 +27,12 @@ const Extraction = ({ provider: provider }) => {
 							const stakeContract = new ethers.Contract(labAddress, abis.extractorLab, provider)
 							const contractMutantOwner = await stakeContract.getMutantOwner()
 							if (!checkIfZeroAddress(contractMutantOwner)) {
+								let isPaused = false
 								const isCooledDown = await dnaContract.isCooledDown(labMutantId)
+								if (isCooledDown) {
+									isPaused = await stakeContract.getPauseState()
+									console.log(isPaused)
+								}
 								const extractedDnaId = !isCooledDown ? await stakeContract.getExtractedDnaId() : -1
 								const extractionCost = await stakeContract.getTotalExtractionCost()
 								const lastExtractor =
@@ -38,10 +43,11 @@ const Extraction = ({ provider: provider }) => {
 										labAddress: labAddress,
 										isStaked: true,
 										tier: mutantInfo.tier,
-										canExtract: chain && chain.network === "goerli" && isCooledDown,
+										canExtract: chain && chain.network === "goerli" && isCooledDown && !isPaused,
 										lastExtractor: lastExtractor,
 										extractedDnaId: extractedDnaId,
 										extractionCost: ethers.utils.formatEther(extractionCost),
+										mutantOwner: contractMutantOwner,
 									}
 									return stakedMutant
 								})

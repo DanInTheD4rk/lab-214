@@ -2319,11 +2319,6 @@ const abis = {
 					name: "scales",
 					type: "uint256",
 				},
-				{
-					internalType: "uint256",
-					name: "rwaste",
-					type: "uint256",
-				},
 			],
 			name: "withdraw",
 			outputs: [],
