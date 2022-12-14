@@ -53,4 +53,26 @@ export const PROJECTS = [
 		auditorIds: [],
 		url: "https://kaijukingzlog.vercel.app/",
 	},
+	{
+		id: 6,
+		name: "Kaiju Mart Dashboard",
+		type: "external",
+		preview: "kaijumartDune",
+		description:
+			"Find Kaiju Mart information including $RWASTE burn for physical and digital items as well as raffle statistics. Note that the info provided may not be 100% accurate. Do not make any financial decisions solely based on the information provided in this dashboard",
+		contributorIds: [4],
+		auditorIds: [],
+		url: "https://dune.com/tylerhys/kaiju-mart-dashboard",
+	},
+	{
+		id: 7,
+		name: "$RWASTE Dashboard",
+		type: "external",
+		preview: "rwasteDune",
+		description:
+			"List of $RWASTE LP Providers. Note that the info provided may not be 100% accurate. Do not make any financial decisions solely based on the information provided in this dashboard",
+		contributorIds: [4],
+		auditorIds: [],
+		url: "https://dune.com/tylerhys/dollarRwaste",
+	},
 ]

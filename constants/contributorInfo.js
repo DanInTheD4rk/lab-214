@@ -44,7 +44,7 @@ export const CONTRIBUTORS = {
 		github: "",
 		website: "",
 		bio: "",
-		projectIds: [4],
+		projectIds: [4, 6, 7],
 		projectAuditIds: [],
 	},
 	5: {

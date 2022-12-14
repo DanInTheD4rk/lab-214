@@ -19,9 +19,7 @@ const styles = {
 		"w-full text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg active:bg-gray-700 active:shadow-lg transition duration-150 ease-in-out",
 }
 
-const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
-const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
 const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
 
@@ -172,7 +170,10 @@ const ExtractTile = (props) => {
 					/>
 					<button
 						ref={actionButtonRef}
-						disabled={(!signer || !mutant.canExtract) && signer && signer._address !== mutant.mutantOwner}
+						disabled={
+							((!signer || !mutant.canExtract) && signer && signer._address !== mutant.mutantOwner) ||
+							mutant.chain !== "goerli"
+						}
 						type="button"
 						className={`${styles.button} w-full disabled:opacity-50`}
 						onClick={

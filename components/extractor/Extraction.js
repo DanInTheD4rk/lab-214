@@ -43,11 +43,12 @@ const Extraction = ({ provider: provider }) => {
 										labAddress: labAddress,
 										isStaked: true,
 										tier: mutantInfo.tier,
-										canExtract: chain && chain.network === "goerli" && isCooledDown && !isPaused,
+										canExtract: isCooledDown && !isPaused,
 										lastExtractor: lastExtractor,
 										extractedDnaId: extractedDnaId,
 										extractionCost: ethers.utils.formatEther(extractionCost),
 										mutantOwner: contractMutantOwner,
+										chain: chain && chain.network,
 									}
 									return stakedMutant
 								})
