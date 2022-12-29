@@ -70,9 +70,19 @@ export const PROJECTS = [
 		type: "external",
 		preview: "rwasteDune",
 		description:
-			"List of $RWASTE LP Providers. Note that the info provided may not be 100% accurate. Do not make any financial decisions solely based on the information provided in this dashboard",
+			"List of $RWASTE LP Providers. Please use the top section as the v2 information is not correct. Do not make any financial decisions solely based on the information provided in this dashboard",
 		contributorIds: [4],
 		auditorIds: [],
 		url: "https://dune.com/tylerhys/dollarRwaste",
+	},
+	{
+		id: 8,
+		name: "Kaiju Locator",
+		type: "lab",
+		preview: "",
+		description: "",
+		contributorIds: [1],
+		auditorIds: [],
+		url: "https://www.lab214.io/labs/locator",
 	},
 ]

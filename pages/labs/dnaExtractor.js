@@ -9,7 +9,7 @@ import Extraction from "../../components/extractor/Extraction"
 import Toast from "../../components/Toast"
 import AppInfo from "../../components/appInfo/AppInfo"
 import { useContract, useSigner } from "wagmi"
-import Contributor from "../../components/appInfo/Contributor"
+import Profile from "../../components/appInfo/Profile"
 
 const styles = {
 	button:
@@ -28,7 +28,7 @@ const NETWORK = process.env.NEXT_PUBLIC_NETWORK
 const ALCHEMY_ID = process.env.NEXT_PUBLIC_ALCHEMY_ID
 
 const contractInfo = [EXTRACTOR_CONTRACT, FACTORY_CONTRACT]
-const contributors = [<Contributor user="DanInTheD4rk" />]
+const contributors = [<Profile user="DanInTheD4rk" />]
 
 const DnaExtractor = () => {
 	const [openTab, setOpenTab] = useState(1)
