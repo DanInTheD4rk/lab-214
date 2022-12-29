@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import "mapbox-gl/dist/mapbox-gl.css"
 import mapboxgl from "!mapbox-gl"
 import Profile from "../../components/appInfo/Profile"
@@ -17,6 +17,29 @@ const contributors = [<Profile user="DanInTheD4rk" />]
 
 const locator = () => {
 	const { data: session } = useSession()
+	const [coordinates, setCoordinates] = useState({ longitude: 139.8, latitude: 35.68 })
+	const [points, setPoints] = useState([])
+
+	useEffect(() => {
+		console.log(coordinates)
+	}, [coordinates])
+
+	const test = () => {
+		let t = {
+			id: 1,
+			longitude: coordinates.longitude,
+			latitude: coordinates.latitude,
+		}
+		console.log(coordinates)
+		setPoints([t])
+	}
+
+	const onMarkerDragEnd = useCallback((event) => {
+		setCoordinates({
+			longitude: event.lngLat.lng,
+			latitude: event.lngLat.lat,
+		})
+	}, [])
 
 	return (
 		<>
@@ -25,13 +48,21 @@ const locator = () => {
 
 				<div className="flex flex-wrap mt-6">
 					{!session && (
-						<button type="button" className={`m-10 ${styles.button}`} onClick={() => signIn()}>
+						<button
+							type="button"
+							className={`m-10 ${styles.button}`}
+							onClick={() => signIn("discord", { callbackUrl: "", redirect: true }, { prompt: "none" })}
+						>
 							Log In
 						</button>
 					)}
+					<button type="button" className={`m-10 ${styles.button}`} onClick={() => test()}>
+						Add Test
+					</button>
 					{session && (
 						<div className="w-full min-h-[600px]">
 							<Map
+								reuseMaps
 								initialViewState={{
 									longitude: 139.8,
 									latitude: 35.68,
@@ -41,9 +72,22 @@ const locator = () => {
 								}}
 								mapStyle="mapbox://styles/mapbox/streets-v12"
 							>
-								<Marker longitude={139.8} latitude={35.68} anchor="bottom" draggable={true}>
-									<img className="max-h-[24px]" src={marker.src} />
-								</Marker>
+								{points.length === 0 && (
+									<Marker
+										longitude={coordinates.longitude}
+										latitude={coordinates.latitude}
+										anchor="bottom"
+										draggable={true}
+										onDragEnd={onMarkerDragEnd}
+									>
+										<img className="max-h-[24px]" src={marker.src} />
+									</Marker>
+								)}
+								{points.map((point) => (
+									<Marker key={point.id} longitude={point.longitude} latitude={point.latitude}>
+										<img className="max-h-[24px] rounded-full border-2 border-red-600" src={session.user.image} />
+									</Marker>
+								))}
 							</Map>
 						</div>
 					)}
