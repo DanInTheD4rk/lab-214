@@ -18,20 +18,41 @@ const contributors = [<Profile user="DanInTheD4rk" />]
 const locator = () => {
 	const { data: session } = useSession()
 	const [coordinates, setCoordinates] = useState({ longitude: 139.8, latitude: 35.68 })
-	const [points, setPoints] = useState([])
+	const [locations, setLocations] = useState([])
 
 	useEffect(() => {
 		console.log(coordinates)
-	}, [coordinates])
+		console.log(locations)
+		console.log(session)
+	}, [coordinates, locations])
+
+	useEffect(() => {
+		;(async () => {
+			await fetch("/api/location")
+				.then(async (res) => {
+					setLocations(await res.json())
+				})
+				.catch((e) => console.log(e))
+		})()
+	}, [])
 
 	const test = () => {
-		let t = {
-			id: 1,
+		const body = {
+			userId: session.user.id,
 			longitude: coordinates.longitude,
 			latitude: coordinates.latitude,
+			imageUrl: session.user.image,
 		}
-		console.log(coordinates)
-		setPoints([t])
+
+		fetch("/api/location", {
+			method: "POST",
+			body: JSON.stringify(body),
+			headers: {
+				"Content-type": "application/json; charset=UTF-8",
+			},
+		})
+
+		setLocations([...locations, body])
 	}
 
 	const onMarkerDragEnd = useCallback((event) => {
@@ -72,7 +93,7 @@ const locator = () => {
 								}}
 								mapStyle="mapbox://styles/mapbox/streets-v12"
 							>
-								{points.length === 0 && (
+								{locations.length === 0 && (
 									<Marker
 										longitude={coordinates.longitude}
 										latitude={coordinates.latitude}
@@ -83,9 +104,9 @@ const locator = () => {
 										<img className="max-h-[24px]" src={marker.src} />
 									</Marker>
 								)}
-								{points.map((point) => (
-									<Marker key={point.id} longitude={point.longitude} latitude={point.latitude}>
-										<img className="max-h-[24px] rounded-full border-2 border-red-600" src={session.user.image} />
+								{locations.map((location) => (
+									<Marker key={location.userId} longitude={location.longitude} latitude={location.latitude}>
+										<img className="max-h-[24px] rounded-full border-2 border-red-600" src={location.imageUrl} />
 									</Marker>
 								))}
 							</Map>

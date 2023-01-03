@@ -1,9 +1,8 @@
 import NextAuth from "next-auth"
 import DiscordProvider from "next-auth/providers/discord"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
+import prisma from "../../../prisma/prisma"
 
-const prisma = new PrismaClient()
 const scope = ["identify", "guilds", "guilds.members.read"].join(" ")
 const roles = ["1035583655772426320", "1035583944650924032", "892046947303714867"] // gen, baby, mutant
 
@@ -21,11 +20,12 @@ export default NextAuth({
 				},
 			})
 				.then((resp) => resp.json())
-				.then((data) => {
-					console.log(data)
-					isHolder = data.roles.some((role) => roles.includes(role))
-				})
+				.then((data) => (isHolder = data.roles.some((role) => roles.includes(role))))
 			return isHolder || "/error/noRoles"
+		},
+		async session({ session, user }) {
+			session.user.id = user.id
+			return session
 		},
 	},
 	providers: [
