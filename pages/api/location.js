@@ -8,16 +8,8 @@ export default async (req, res) => {
 			break
 		}
 		case "POST": {
-			await prisma.location.upsert({
-				where: {
-					userId: req.body.userId,
-				},
-				update: {
-					longitude: req.body.longitude,
-					latitude: req.body.latitude,
-					imageUrl: req.body.imageUrl,
-				},
-				create: {
+			await prisma.location.create({
+				data: {
 					userId: req.body.userId,
 					longitude: req.body.longitude,
 					latitude: req.body.latitude,
@@ -25,6 +17,15 @@ export default async (req, res) => {
 				},
 			})
 			res.status(200)
+			break
+		}
+		case "DELETE": {
+			await prisma.location.delete({
+				where: {
+					userId: req.body.userId,
+				},
+			})
+			res.status(204)
 			break
 		}
 	}

@@ -19,12 +19,14 @@ const locator = () => {
 	const { data: session } = useSession()
 	const [coordinates, setCoordinates] = useState({ longitude: 139.8, latitude: 35.68 })
 	const [locations, setLocations] = useState([])
+	const [hasUserLocation, setHasUserLocation] = useState(false)
 
 	useEffect(() => {
-		console.log(coordinates)
-		console.log(locations)
-		console.log(session)
-	}, [coordinates, locations])
+		if (session && session.user) {
+			const userLocation = locations.find((location) => location.userId === session.user.id)
+			setHasUserLocation(userLocation ? true : false)
+		}
+	}, [session, locations])
 
 	useEffect(() => {
 		;(async () => {
@@ -36,7 +38,7 @@ const locator = () => {
 		})()
 	}, [])
 
-	const test = () => {
+	const saveLocation = () => {
 		const body = {
 			userId: session.user.id,
 			longitude: coordinates.longitude,
@@ -50,9 +52,19 @@ const locator = () => {
 			headers: {
 				"Content-type": "application/json; charset=UTF-8",
 			},
-		})
+		}).then(setLocations([...locations, body]))
+	}
 
-		setLocations([...locations, body])
+	const removeLocation = () => {
+		fetch("/api/location", {
+			method: "DELETE",
+			body: JSON.stringify({
+				userId: session.user.id,
+			}),
+			headers: {
+				"Content-type": "application/json; charset=UTF-8",
+			},
+		}).then(setLocations(locations.filter((location) => location.userId !== session.user.id)))
 	}
 
 	const onMarkerDragEnd = useCallback((event) => {
@@ -77,8 +89,12 @@ const locator = () => {
 							Log In
 						</button>
 					)}
-					<button type="button" className={`m-10 ${styles.button}`} onClick={() => test()}>
-						Add Test
+					<button
+						type="button"
+						className={`m-10 ${styles.button}`}
+						onClick={hasUserLocation ? () => removeLocation() : () => saveLocation()}
+					>
+						{hasUserLocation ? "Remove Location" : "Save Location"}
 					</button>
 					{session && (
 						<div className="w-full min-h-[600px]">
@@ -93,7 +109,7 @@ const locator = () => {
 								}}
 								mapStyle="mapbox://styles/mapbox/streets-v12"
 							>
-								{locations.length === 0 && (
+								{!hasUserLocation && (
 									<Marker
 										longitude={coordinates.longitude}
 										latitude={coordinates.latitude}
