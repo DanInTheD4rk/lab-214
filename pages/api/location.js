@@ -4,7 +4,7 @@ export default async (req, res) => {
 	switch (req.method) {
 		case "GET": {
 			const locations = await prisma.location.findMany()
-			res.status(200).json(locations)
+			res.status(200).json(locations).end()
 			break
 		}
 		case "POST": {
@@ -16,7 +16,7 @@ export default async (req, res) => {
 					imageUrl: req.body.imageUrl,
 				},
 			})
-			res.status(200)
+			res.status(200).end()
 			break
 		}
 		case "DELETE": {
@@ -25,7 +25,7 @@ export default async (req, res) => {
 					userId: req.body.userId,
 				},
 			})
-			res.status(204)
+			res.status(204).end()
 			break
 		}
 	}

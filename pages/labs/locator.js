@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState, useCallback, useMemo } from "react"
 import "mapbox-gl/dist/mapbox-gl.css"
 import mapboxgl from "!mapbox-gl"
 import Profile from "../../components/appInfo/Profile"
 import AppInfo from "../../components/appInfo/AppInfo"
-import Map, { Marker } from "react-map-gl"
+import Map, { Marker, Layer, Feature, Popup } from "react-map-gl"
 import marker from "../../public/marker.png"
 import { signIn, useSession } from "next-auth/react"
 
@@ -20,6 +20,27 @@ const locator = () => {
 	const [coordinates, setCoordinates] = useState({ longitude: 139.8, latitude: 35.68 })
 	const [locations, setLocations] = useState([])
 	const [hasUserLocation, setHasUserLocation] = useState(false)
+	const [popupInfo, setPopupInfo] = useState()
+
+	const markers = useMemo(
+		() =>
+			locations.map((location) => (
+				<Marker
+					key={location.userId}
+					longitude={location.longitude}
+					latitude={location.latitude}
+					onClick={async (e) => {
+						const user = await fetch("/api/user/" + location.userId).then((res) => res.json())
+						e.originalEvent.stopPropagation()
+						setPopupInfo({ ...location, username: user.name })
+					}}
+					anchor="top"
+				>
+					<img className="z-40 max-h-[24px] rounded-full" src={location.imageUrl} />
+				</Marker>
+			)),
+		[locations]
+	)
 
 	useEffect(() => {
 		if (session && session.user) {
@@ -100,6 +121,7 @@ const locator = () => {
 						<div className="w-full min-h-[600px]">
 							<Map
 								reuseMaps
+								{...coordinates}
 								initialViewState={{
 									longitude: 139.8,
 									latitude: 35.68,
@@ -107,24 +129,30 @@ const locator = () => {
 									minZoom: 2,
 									maxZoom: 15,
 								}}
+								onMove={(evt) => setCoordinates(evt.viewState)}
 								mapStyle="mapbox://styles/mapbox/streets-v12"
 							>
 								{!hasUserLocation && (
 									<Marker
 										longitude={coordinates.longitude}
 										latitude={coordinates.latitude}
-										anchor="bottom"
 										draggable={true}
 										onDragEnd={onMarkerDragEnd}
 									>
 										<img className="max-h-[24px]" src={marker.src} />
 									</Marker>
 								)}
-								{locations.map((location) => (
-									<Marker key={location.userId} longitude={location.longitude} latitude={location.latitude}>
-										<img className="max-h-[24px] rounded-full border-2 border-red-600" src={location.imageUrl} />
-									</Marker>
-								))}
+								{markers}
+								{popupInfo && (
+									<Popup
+										anchor="bottom"
+										longitude={popupInfo.longitude}
+										latitude={popupInfo.latitude}
+										onClose={() => setPopupInfo(null)}
+									>
+										<h3 className="mr-2 font-bold">{popupInfo.username}</h3>
+									</Popup>
+								)}
 							</Map>
 						</div>
 					)}
