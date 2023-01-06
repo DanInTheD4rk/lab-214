@@ -30,9 +30,8 @@ const locator = () => {
 					longitude={location.longitude}
 					latitude={location.latitude}
 					onClick={async (e) => {
-						const user = await fetch("/api/user/" + location.userId).then((res) => res.json())
 						e.originalEvent.stopPropagation()
-						setPopupInfo({ ...location, username: user.name })
+						setPopupInfo(location)
 					}}
 					anchor="top"
 				>
@@ -65,6 +64,7 @@ const locator = () => {
 			longitude: coordinates.longitude,
 			latitude: coordinates.latitude,
 			imageUrl: session.user.image,
+			user: { name: session.user.name },
 		}
 
 		fetch("/api/location", {
@@ -150,7 +150,7 @@ const locator = () => {
 										latitude={popupInfo.latitude}
 										onClose={() => setPopupInfo(null)}
 									>
-										<h3 className="mr-2 font-bold">{popupInfo.username}</h3>
+										<h3 className="mr-2 font-bold">{popupInfo.user.name}</h3>
 									</Popup>
 								)}
 							</Map>

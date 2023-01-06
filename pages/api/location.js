@@ -3,8 +3,20 @@ import prisma from "../../prisma/prisma"
 export default async (req, res) => {
 	switch (req.method) {
 		case "GET": {
-			const locations = await prisma.location.findMany()
-			res.status(200).json(locations).end()
+			const locations = await prisma.location.findMany({
+				select: {
+					userId: true,
+					longitude: true,
+					latitude: true,
+					imageUrl: true,
+					user: {
+						select: {
+							name: true,
+						},
+					},
+				},
+			})
+			res.status(200).json(locations)
 			break
 		}
 		case "POST": {
