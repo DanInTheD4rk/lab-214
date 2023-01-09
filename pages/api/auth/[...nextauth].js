@@ -6,7 +6,7 @@ import prisma from "../../../prisma/prisma"
 const scope = ["identify", "guilds", "guilds.members.read"].join(" ")
 const roles = ["1035583655772426320", "1035583944650924032", "892046947303714867"] // gen, baby, mutant
 
-export default NextAuth({
+export const authOptions = {
 	adapter: PrismaAdapter(prisma),
 	callbacks: {
 		async signIn({ user, account, profile, email, credentials }) {
@@ -43,7 +43,7 @@ export default NextAuth({
 				}
 				return {
 					id: profile.id,
-					name: profile.username,
+					name: profile.username + "#" + profile.discriminator,
 					email: profile.email,
 					image: profile.image_url,
 				}
@@ -52,4 +52,6 @@ export default NextAuth({
 	],
 	database: process.env.DATABASE_URL,
 	secret: process.env.SECRET_KEY_OPENSSL,
-})
+}
+
+export default NextAuth(authOptions)

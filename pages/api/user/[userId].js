@@ -9,8 +9,13 @@ export default async (req, res) => {
 				where: {
 					id: userId,
 				},
+				select: {
+					id: true,
+					name: true,
+					image: true,
+				},
 			})
-			res.status(200).json(user).end()
+			res.status(200).json(user)
 			break
 		}
 	}
