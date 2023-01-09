@@ -1,5 +1,5 @@
-export const PROJECTS = [
-	{
+export const PROJECTS = {
+	1: {
 		id: 1,
 		name: "DNA Extractor",
 		type: "lab",
@@ -9,7 +9,7 @@ export const PROJECTS = [
 		auditorIds: [],
 		url: "https://www.lab214.io/labs/dnaExtractor",
 	},
-	{
+	2: {
 		id: 2,
 		name: "Kaiju Kingz Santa",
 		type: "external",
@@ -20,7 +20,7 @@ export const PROJECTS = [
 		auditorIds: [],
 		url: "https://kaijukingzsanta.netlify.app/#/",
 	},
-	{
+	3: {
 		id: 3,
 		name: "Mutant Sniper",
 		type: "external",
@@ -31,7 +31,7 @@ export const PROJECTS = [
 		auditorIds: [],
 		url: "http://mutantsniper.herokuapp.com/",
 	},
-	{
+	4: {
 		id: 4,
 		name: "Kaiju Kingz P2E Dashboard",
 		type: "external",
@@ -42,7 +42,7 @@ export const PROJECTS = [
 		auditorIds: [],
 		url: "https://dune.com/tylerhys/Kaiju-Kingz-P2E-Dashboard",
 	},
-	{
+	5: {
 		id: 5,
 		name: "Kaiju Kingz Log",
 		type: "external",
@@ -53,7 +53,7 @@ export const PROJECTS = [
 		auditorIds: [],
 		url: "https://kaijukingzlog.vercel.app/",
 	},
-	{
+	6: {
 		id: 6,
 		name: "Kaiju Mart Dashboard",
 		type: "external",
@@ -64,7 +64,7 @@ export const PROJECTS = [
 		auditorIds: [],
 		url: "https://dune.com/tylerhys/kaiju-mart-dashboard",
 	},
-	{
+	7: {
 		id: 7,
 		name: "$RWASTE Dashboard",
 		type: "external",
@@ -75,7 +75,7 @@ export const PROJECTS = [
 		auditorIds: [],
 		url: "https://dune.com/tylerhys/dollarRwaste",
 	},
-	{
+	8: {
 		id: 8,
 		name: "Kaiju Locator",
 		type: "lab",
@@ -85,4 +85,15 @@ export const PROJECTS = [
 		auditorIds: [],
 		url: "https://www.lab214.io/labs/locator",
 	},
-]
+	9: {
+		id: 9,
+		name: "Kaiju Fitting Room",
+		type: "external",
+		preview: "kaijuFittingRoom",
+		description:
+			"Try before you buy with the Kaiju Fitting Room. Equipt different augmints to find the perfect look for your kaiju and download to share your creation",
+		contributorIds: [3],
+		auditorIds: [],
+		url: "https://kaiju.erc1337.tools/",
+	},
+}

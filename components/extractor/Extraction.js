@@ -31,7 +31,6 @@ const Extraction = ({ provider: provider }) => {
 								const isCooledDown = await dnaContract.isCooledDown(labMutantId)
 								if (isCooledDown) {
 									isPaused = await stakeContract.getPauseState()
-									console.log(isPaused)
 								}
 								const extractedDnaId = !isCooledDown ? await stakeContract.getExtractedDnaId() : -1
 								const extractionCost = await stakeContract.getTotalExtractionCost()

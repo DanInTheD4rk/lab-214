@@ -4,6 +4,7 @@ import { CONTRIBUTORS } from "../constants/contributorInfo"
 import Profile from "../components/appInfo/Profile"
 
 const previews = importAllImages(require.context("../public/projectPreviews", false, /\.(png|jpe?g|svg)$/))
+const externalTools = [2, 9, 4, 3, 6, 7, 5]
 
 const External = () => {
 	return (
@@ -13,12 +14,8 @@ const External = () => {
 					<div className="w-fit">
 						<div className="unset flex flex-col min-w-0 break-words bg-white w-full mb-6 mt-20 shadow-lg rounded bg-opacity-25">
 							<div className="px-4 py-5 flex-auto">
-								{PROJECTS.map((project) => {
-									if (project.type === "external") {
-										return <ProjectTile preview={previews[project.preview].src} info={project} />
-									} else {
-										return null
-									}
+								{externalTools.map((project) => {
+									return <ProjectTile preview={previews[PROJECTS[project].preview].src} info={PROJECTS[project]} />
 								})}
 							</div>
 						</div>
