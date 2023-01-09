@@ -146,7 +146,7 @@ const DnaExtractor = () => {
 	return (
 		<>
 			<div className="mx-10 mt-20">
-				<AppInfo contracts={contractInfo} contributors={contributors} />
+				<AppInfo contracts={contractInfo} contributors={contributors} projectId={1} />
 				{/* <button type="button" className={`m-10 ${styles.button} w-fit`} onClick={mint}>
 				Mint
 			</button>

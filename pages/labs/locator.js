@@ -100,7 +100,7 @@ const locator = () => {
 	return (
 		<>
 			<div className="mx-10 my-20">
-				<AppInfo contracts={[]} contributors={contributors} />
+				<AppInfo contributors={contributors} projectId={8} />
 
 				<div className="flex flex-wrap">
 					<div className="w-full">

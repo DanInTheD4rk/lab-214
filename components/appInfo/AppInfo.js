@@ -1,6 +1,7 @@
 import { Fragment } from "react"
 import { Disclosure, Transition } from "@headlessui/react"
 import { InformationCircleIcon } from "@heroicons/react/20/solid"
+import { PROJECTS } from "../../constants/projectInfo"
 
 const styles = {
 	infoTitle: "flex flex-row items-center text-white mr-2",
@@ -13,7 +14,7 @@ function classNames(...classes) {
 
 const NETWORK = process.env.NEXT_PUBLIC_NETWORK
 
-const AppInfo = ({ contracts = [], contributors = [], auditors = [] }) => {
+const AppInfo = ({ contracts = [], contributors = [], auditors = [], projectId }) => {
 	const contractLinks = contracts.map((address) => {
 		let url = NETWORK === "homestead" ? "https://" : "https://goerli."
 		url += `etherscan.io/address/${address}#code`
@@ -65,6 +66,13 @@ const AppInfo = ({ contracts = [], contributors = [], auditors = [] }) => {
 						<Disclosure.Panel className="fixed z-10 text-gray-500">
 							<div className="overflow-hidden m-4 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
 								<div className="relative grid gap-6 bg-slate-800 px-5 py-6 sm:gap-8 sm:p-8">
+									{PROJECTS[projectId].description && (
+										<div className={styles.infoBlock}>
+											<div className={styles.infoTitle + " items-baseline"}>About: </div>
+											<div className="max-w-md text-white text-sm">{PROJECTS[projectId].description}</div>
+										</div>
+									)}
+
 									<div className={styles.infoBlock}>
 										<div className={styles.infoTitle}>Contributors: </div>
 										{contributors.slice(0, 5).map((contributor, idx) => (

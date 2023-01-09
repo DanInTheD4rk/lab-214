@@ -4,7 +4,8 @@ export const PROJECTS = {
 		name: "DNA Extractor",
 		type: "lab",
 		preview: "",
-		description: "",
+		description:
+			"Use available mutants to extract DNA or create your own contract to stake mutants for others to use. Control your own fees, withdraw accumulated SCALES, and pause extraction for others at any time.",
 		contributorIds: [1],
 		auditorIds: [],
 		url: "https://www.lab214.io/labs/dnaExtractor",
@@ -80,7 +81,8 @@ export const PROJECTS = {
 		name: "Kaiju Locator",
 		type: "lab",
 		preview: "",
-		description: "",
+		description:
+			"Represent your region and connect with local Kingz to hang out with. Locations are randomized within the local area prior to saving to help prevent Kingz from doxing their exact location. RIP if you live by water.",
 		contributorIds: [1],
 		auditorIds: [],
 		url: "https://www.lab214.io/labs/locator",
