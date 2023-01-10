@@ -7,6 +7,8 @@ import Link from "next/link"
 import Spinner from "./Spinner"
 import { useLoading } from "./LoadingContext"
 import logo from "../public/logoBordered.png"
+import Profile from "../components/appInfo/Profile"
+import { useSession, signOut } from "next-auth/react"
 
 const navigation = [
 	{ name: "External Tools", href: "/externalTools", current: false },
@@ -20,6 +22,11 @@ const labs = [
 		description: "Stake or use Mutants for DNA extraction",
 		href: "/labs/dnaExtractor",
 	},
+	{
+		name: "Kaiju Locator",
+		description: "Find and connect with local holders",
+		href: "/labs/locator",
+	},
 ]
 
 function classNames(...classes) {
@@ -28,6 +35,8 @@ function classNames(...classes) {
 
 export default function NavBar() {
 	const { loading } = useLoading()
+	const { data: session, status } = useSession()
+
 	return (
 		<>
 			{loading && <Spinner />}
@@ -129,7 +138,14 @@ export default function NavBar() {
 									</div>
 								</div>
 								<div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-									<ConnectButton label="Connect Wallet" showBalance={false} accountStatus="address" />
+									<>
+										{session && (
+											<button onClick={() => signOut()}>
+												<Profile user={session.user.name.slice(0, -5)} pfp={session.user.image} />
+											</button>
+										)}
+										<ConnectButton label="Connect Wallet" showBalance={false} accountStatus="address" />
+									</>
 								</div>
 							</div>
 						</div>

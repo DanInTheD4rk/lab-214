@@ -8,7 +8,7 @@ export const CONTRIBUTORS = {
 		github: "",
 		website: "",
 		bio: "",
-		projectIds: [1],
+		projectIds: [1, 8],
 		projectAuditIds: [],
 	},
 	2: {

@@ -1,9 +1,10 @@
 import { importAllImages } from "../utils/utils"
 import { PROJECTS } from "../constants/projectInfo"
 import { CONTRIBUTORS } from "../constants/contributorInfo"
-import Contributor from "../components/appInfo/Contributor"
+import Profile from "../components/appInfo/Profile"
 
 const previews = importAllImages(require.context("../public/projectPreviews", false, /\.(png|jpe?g|svg)$/))
+const externalTools = [2, 9, 4, 3, 6, 7, 5]
 
 const External = () => {
 	return (
@@ -13,12 +14,8 @@ const External = () => {
 					<div className="w-fit">
 						<div className="unset flex flex-col min-w-0 break-words bg-white w-full mb-6 mt-20 shadow-lg rounded bg-opacity-25">
 							<div className="px-4 py-5 flex-auto">
-								{PROJECTS.map((project) => {
-									if (project.type === "external") {
-										return <ProjectTile preview={previews[project.preview].src} info={project} />
-									} else {
-										return null
-									}
+								{externalTools.map((project) => {
+									return <ProjectTile preview={previews[PROJECTS[project].preview].src} info={PROJECTS[project]} />
 								})}
 							</div>
 						</div>
@@ -42,7 +39,7 @@ const ProjectTile = ({ preview, info }) => {
 				<div className="flex flex-wrap flex-row text-base items-center mt-2">
 					<p className="mr-3">Contributors:</p>
 					{info.contributorIds.map((id) => (
-						<Contributor user={CONTRIBUTORS[id].name} />
+						<Profile user={CONTRIBUTORS[id].name} />
 					))}
 				</div>
 				<div className="flex flex-wrap flex-row text-base items-center mb-4">
@@ -50,7 +47,7 @@ const ProjectTile = ({ preview, info }) => {
 						<div className="flex flex-row flex-wrap">
 							<div className="flex flex-row items-center text-white mr-2">Audited By: </div>
 							{info.auditorIds.map((id) => (
-								<Contributor user={CONTRIBUTORS[id].name} />
+								<Profile user={CONTRIBUTORS[id].name} />
 							))}
 						</div>
 					) : null}

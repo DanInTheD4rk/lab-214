@@ -1,5 +1,4 @@
 import "../styles/globals.css"
-
 import "@rainbow-me/rainbowkit/styles.css"
 
 import { connectorsForWallets } from "@rainbow-me/rainbowkit"
@@ -12,6 +11,7 @@ import Avatar from "../components/Avatar"
 import Layout from "../components/Layout"
 import { LoadingProvider } from "../components/LoadingContext"
 import { ModalProvider } from "../components/ModalContext"
+import { SessionProvider } from "next-auth/react"
 
 const ALCHEMY_ID = process.env.NEXT_PUBLIC_ALCHEMY_ID
 
@@ -47,13 +47,15 @@ function MyApp({ Component, pageProps }) {
 				chains={[]}
 				modalSize="compact"
 			>
-				<LoadingProvider>
-					<ModalProvider>
-						<Layout>
-							<Component {...pageProps} />
-						</Layout>
-					</ModalProvider>
-				</LoadingProvider>
+				<SessionProvider session={pageProps.session}>
+					<LoadingProvider>
+						<ModalProvider>
+							<Layout>
+								<Component {...pageProps} />
+							</Layout>
+						</ModalProvider>
+					</LoadingProvider>
+				</SessionProvider>
 			</RainbowKitProvider>
 		</WagmiConfig>
 	)
