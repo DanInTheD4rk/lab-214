@@ -7,6 +7,7 @@ import Map, { Marker, Popup } from "react-map-gl"
 import marker from "../../public/marker.png"
 import { signIn, useSession } from "next-auth/react"
 import discordLogo from "../../public/discordLogo.png"
+import Communities from "../../components/locator/Communities"
 
 const styles = {
 	button:
@@ -109,7 +110,7 @@ const locator = () => {
 								<a
 									className={
 										"text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-										(openTab === 1 ? "text-black bg-white bg-opacity-80" : "text-white bg-white bg-opacity-25")
+										(openTab === 1 ? "text-black bg-white bg-opacity-80" : "text-white bg-gray-800 bg-opacity-60")
 									}
 									onClick={(e) => {
 										e.preventDefault()
@@ -126,7 +127,7 @@ const locator = () => {
 								<a
 									className={
 										"text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-										(openTab === 2 ? "text-black bg-white bg-opacity-80" : "text-white bg-white bg-opacity-25")
+										(openTab === 2 ? "text-black bg-white bg-opacity-80" : "text-white bg-gray-800 bg-opacity-60")
 									}
 									onClick={(e) => {
 										e.preventDefault()
@@ -136,11 +137,11 @@ const locator = () => {
 									href="#link2"
 									role="tablist"
 								>
-									<i className="fas fa-cog text-base mr-1"></i> Groups
+									<i className="fas fa-cog text-base mr-1"></i> Communities
 								</a>
 							</li>
 						</ul>
-						<div className="unset flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded bg-opacity-25">
+						<div className="unset flex flex-col min-w-0 break-words bg-gray-800 w-full mb-6 shadow-lg rounded bg-opacity-60">
 							<div className="px-4 py-5 flex-auto">
 								<div className="tab-content tab-space">
 									<div className={openTab === 1 ? "block" : "hidden"} id="link1">
@@ -210,7 +211,7 @@ const locator = () => {
 										</div>
 									</div>
 									<div className={openTab === 2 ? "block" : "hidden"} id="link2">
-										<div className="bolld text-white">Coming Soon...</div>
+										<Communities />
 									</div>
 								</div>
 							</div>
