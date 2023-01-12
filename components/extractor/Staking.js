@@ -1,13 +1,14 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import abis from "../../constants/abisGoerli"
 import abisMainnet from "../../constants/abisMainnet"
 import { ethers } from "ethers"
 import { alchemy } from "../../utils/Alchemy"
 import MutantTile from "./MutantTile"
-import { useSigner, useContractEvent } from "wagmi"
+import { useSigner } from "wagmi"
 import { ACTION_TYPES } from "../../constants/extractor"
 import { checkIfZeroAddress } from "../../utils/utils"
 import { useNetwork } from "wagmi"
+import PropTypes from "prop-types"
 
 const styles = {
 	button:
@@ -189,3 +190,7 @@ const Staking = ({ provider: provider }) => {
 }
 
 export default Staking
+
+Staking.propTypes = {
+	provider: PropTypes.object,
+}

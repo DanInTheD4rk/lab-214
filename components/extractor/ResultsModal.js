@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import failedExperiment from "../../public/failedExperiment.gif"
 import { useModal } from "../ModalContext"
+import PropTypes from "prop-types"
 
 const DNA_URI = process.env.NEXT_PUBLIC_DNA_URI
 const dnaImages = require.context("../../public/dna", true)
@@ -94,3 +95,11 @@ const ResultsModal = ({ results, transferDna }) => {
 }
 
 export default ResultsModal
+
+ResultsModal.propTypes = {
+	results: PropTypes.shape({
+		success: PropTypes.bool,
+		tokenId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	}),
+	transferDna: PropTypes.func,
+}

@@ -4,8 +4,8 @@ import { useSigner } from "wagmi"
 import { ethers } from "ethers"
 import abis from "../../constants/abisGoerli"
 import { useLoading } from "../LoadingContext"
+import PropTypes from "prop-types"
 
-const DNA_URI = process.env.NEXT_PUBLIC_DNA_URI
 const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
 
 const actionButtonClass = `inline-flex font-bold h-9 justify-self-end rounded-md border border-transparent bg-blue-700 hover:opacity-80 px-6 py-2.5 text-xs font-medium
@@ -42,7 +42,6 @@ const ManageModal = ({ mutant }) => {
 
 	const setExtractionFee = (e) => {
 		const num = e.target.value
-		const parsedNum = parseFloat(num)
 		if (num.match(/^[0-9]+$/) != null) {
 			setFee(ethers.utils.parseEther(num))
 		} else {
@@ -150,3 +149,9 @@ const ManageModal = ({ mutant }) => {
 }
 
 export default ManageModal
+
+ManageModal.propTypes = {
+	mutant: PropTypes.shape({
+		labAddress: PropTypes.string,
+	}),
+}

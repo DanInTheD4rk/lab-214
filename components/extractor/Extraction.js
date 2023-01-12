@@ -4,6 +4,7 @@ import { checkIfZeroAddress } from "../../utils/utils"
 import { ethers } from "ethers"
 import abis from "../../constants/abisGoerli"
 import { useNetwork } from "wagmi"
+import PropTypes from "prop-types"
 
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
@@ -32,7 +33,11 @@ const Extraction = ({ provider: provider }) => {
 								if (isCooledDown) {
 									isPaused = await stakeContract.getPauseState()
 								}
-								const extractedDnaId = !isCooledDown ? await stakeContract.getExtractedDnaId() : -1
+								let extractedDnaId = !isCooledDown ? await stakeContract.getExtractedDnaId() : -1
+								extractedDnaId =
+									typeof extractedDnaId === "object"
+										? parseInt(ethers.utils.formatEther(extractedDnaId))
+										: extractedDnaId
 								const extractionCost = await stakeContract.getTotalExtractionCost()
 								const lastExtractor =
 									extractedDnaId >= 0 ? await stakeContract.getLastExtractor() : ethers.constants.AddressZero
@@ -100,3 +105,7 @@ const Extraction = ({ provider: provider }) => {
 }
 
 export default Extraction
+
+Extraction.propTypes = {
+	provider: PropTypes.object,
+}

@@ -17,7 +17,7 @@ const styles = {
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX
 const contributors = [<Profile user="DanInTheD4rk" />]
 
-const locator = () => {
+const Locator = () => {
 	const tabs = [
 		{
 			title: "Map",
@@ -189,4 +189,4 @@ const MapTab = () => {
 	)
 }
 
-export default locator
+export default Locator

@@ -34,8 +34,7 @@ const getTierColor = (tier) => {
 
 const EXTRACTION_COST = 600
 
-const ExtractTile = (props) => {
-	const mutant = props.mutant
+const ExtractTile = ({ mutant: mutant }) => {
 	const { setLoading: setLoading } = useLoading()
 	let tierColor = getTierColor(mutant.tier)
 	const tierRef = useRef(null)
@@ -245,5 +244,20 @@ const ModalComponent = ({ extractCost, extractDna }) => {
 export default ExtractTile
 
 ExtractTile.propTypes = {
-	mutant: PropTypes.object,
+	mutant: PropTypes.shape({
+		tier: PropTypes.number,
+		lastExtractor: PropTypes.string,
+		extractionCost: PropTypes.string,
+		extractedDnaId: PropTypes.number,
+		labAddress: PropTypes.string,
+		tokenId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		canExtract: PropTypes.bool,
+		chain: PropTypes.oneOf(["goerli", "homestead"]),
+		mutantOwner: PropTypes.string,
+	}),
+}
+
+ModalComponent.propTypes = {
+	extractCost: PropTypes.string,
+	extractDna: PropTypes.func,
 }
