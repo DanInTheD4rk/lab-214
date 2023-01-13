@@ -1,8 +1,6 @@
 import Head from "next/head"
-import styles from "../styles/Home.module.css"
-import TWHeader from "../components/NavBar"
-import logo from "../public/logoBordered.png"
-import github from "../public/github.png"
+import logo from "public/icons/logoBordered.png"
+import github from "public/icons/github.png"
 
 export default function Home() {
 	return (

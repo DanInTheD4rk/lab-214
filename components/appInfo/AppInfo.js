@@ -1,7 +1,7 @@
 import { Fragment } from "react"
 import { Disclosure, Transition } from "@headlessui/react"
 import { InformationCircleIcon } from "@heroicons/react/20/solid"
-import { PROJECTS } from "../../constants/projectInfo"
+import { PROJECTS } from "constants/projectInfo"
 
 const styles = {
 	infoTitle: "flex flex-row items-center text-white mr-2",

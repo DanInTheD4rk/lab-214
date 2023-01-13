@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
-import Staking from "../../components/extractor/Staking"
-import Extraction from "../../components/extractor/Extraction"
+import Staking from "components/extractor/Staking"
+import Extraction from "components/extractor/Extraction"
 import { useSigner } from "wagmi"
-import Profile from "../../components/appInfo/Profile"
-import TabBase from "../../components/TabBase"
+import Profile from "components/appInfo/Profile"
+import TabBase from "components/TabBase"
 
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 const EXTRACTOR_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_CONTRACT

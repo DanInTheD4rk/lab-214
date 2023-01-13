@@ -6,8 +6,8 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import Link from "next/link"
 import Spinner from "./Spinner"
 import { useLoading } from "./LoadingContext"
-import logo from "../public/logoBordered.png"
-import Profile from "../components/appInfo/Profile"
+import logo from "public/icons/logoBordered.png"
+import Profile from "components/appInfo/Profile"
 import { useSession, signOut } from "next-auth/react"
 
 const navigation = [

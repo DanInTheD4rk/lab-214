@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react"
 import { useModal } from "../ModalContext"
 import { useSigner } from "wagmi"
 import { ethers } from "ethers"
-import abis from "../../constants/abisGoerli"
+import abis from "constants/abisGoerli"
 import { useLoading } from "../LoadingContext"
 import PropTypes from "prop-types"
 

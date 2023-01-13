@@ -1,7 +1,7 @@
-import { importAllImages } from "../utils/utils"
-import { PROJECTS } from "../constants/projectInfo"
-import { CONTRIBUTORS } from "../constants/contributorInfo"
-import Profile from "../components/appInfo/Profile"
+import { importAllImages } from "utils/utils"
+import { PROJECTS } from "constants/projectInfo"
+import { CONTRIBUTORS } from "constants/contributorInfo"
+import Profile from "components/appInfo/Profile"
 
 const previews = importAllImages(require.context("../public/projectPreviews", false, /\.(png|jpe?g|svg)$/))
 const externalTools = [2, 9, 4, 3, 6, 7, 5]

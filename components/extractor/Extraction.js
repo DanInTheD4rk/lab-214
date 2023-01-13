@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import ExtractTile from "./ExtractTile"
-import { checkIfZeroAddress } from "../../utils/utils"
+import { checkIfZeroAddress } from "utils/utils"
 import { ethers } from "ethers"
-import abis from "../../constants/abisGoerli"
+import abis from "constants/abisGoerli"
 import { useNetwork } from "wagmi"
 import PropTypes from "prop-types"
 
