@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect, useMemo } from "react"
 import PropTypes from "prop-types"
-import failedExperiment from "../../public/failedExperiment.gif"
-import dnaTransfer from "../../public/dna/dnaTransfer.gif"
-import abis from "../../constants/abisGoerli"
-import abisMainnet from "../../constants/abisMainnet"
+import failedExperiment from "public/extractor/failedExperiment.gif"
+import dnaTransfer from "public/extractor/dnaTransfer.gif"
+import abis from "constants/abis"
 import { Contract, ethers } from "ethers"
 import { useContractEvent, useSigner } from "wagmi"
-import { MUTANT_TIERS, BOOST_OPTIONS } from "../../constants/extractor"
+import { MUTANT_TIERS, BOOST_OPTIONS } from "constants/extractor"
 import { useLoading } from "../LoadingContext"
 import { useModal } from "../ModalContext"
 import ResultsModal from "./ResultsModal"
@@ -22,6 +21,7 @@ const styles = {
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
 const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
+const NETWORK = process.env.NEXT_PUBLIC_NETWORK
 
 const getTierColor = (tier) => {
 	// prettier-ignore
@@ -34,8 +34,7 @@ const getTierColor = (tier) => {
 
 const EXTRACTION_COST = 600
 
-const ExtractTile = (props) => {
-	const mutant = props.mutant
+const ExtractTile = ({ mutant: mutant }) => {
 	const { setLoading: setLoading } = useLoading()
 	let tierColor = getTierColor(mutant.tier)
 	const tierRef = useRef(null)
@@ -172,7 +171,7 @@ const ExtractTile = (props) => {
 						ref={actionButtonRef}
 						disabled={
 							((!signer || !mutant.canExtract) && signer && signer._address !== mutant.mutantOwner) ||
-							mutant.chain !== "goerli"
+							mutant.chain !== NETWORK
 						}
 						type="button"
 						className={`${styles.button} w-full disabled:opacity-50`}
@@ -245,5 +244,20 @@ const ModalComponent = ({ extractCost, extractDna }) => {
 export default ExtractTile
 
 ExtractTile.propTypes = {
-	mutant: PropTypes.object,
+	mutant: PropTypes.shape({
+		tier: PropTypes.number,
+		lastExtractor: PropTypes.string,
+		extractionCost: PropTypes.string,
+		extractedDnaId: PropTypes.number,
+		labAddress: PropTypes.string,
+		tokenId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		canExtract: PropTypes.bool,
+		chain: PropTypes.oneOf(["goerli", "homestead"]),
+		mutantOwner: PropTypes.string,
+	}),
+}
+
+ModalComponent.propTypes = {
+	extractCost: PropTypes.string,
+	extractDna: PropTypes.func,
 }

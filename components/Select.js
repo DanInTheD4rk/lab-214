@@ -1,6 +1,7 @@
-import { useMemo, Fragment, useState, useEffect } from "react"
+import { useMemo, Fragment } from "react"
 import { FaChevronDown, FaCheck } from "react-icons/fa"
 import { Listbox, Transition } from "@headlessui/react"
+import PropTypes from "prop-types"
 
 const Select = ({ value, setValue, options, className = "", disabled, placeholder }) => {
 	const selectedOption = useMemo(() => options.find((o) => o.id === value), [options, value])
@@ -47,3 +48,12 @@ const Select = ({ value, setValue, options, className = "", disabled, placeholde
 }
 
 export default Select
+
+Select.propTypes = {
+	value: PropTypes.object,
+	setValue: PropTypes.func,
+	options: PropTypes.array,
+	className: PropTypes.string,
+	disabled: PropTypes.bool,
+	placeholder: PropTypes.string,
+}

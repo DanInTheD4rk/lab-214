@@ -1,6 +1,7 @@
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon"
 import { ethers } from "ethers"
-import failed from "../public/failed.png"
+import failed from "public/icons/failed.png"
+import PropTypes from "prop-types"
 
 const Avatar = ({ address, ensImage, size }) => {
 	if (ensImage) {
@@ -13,3 +14,9 @@ const Avatar = ({ address, ensImage, size }) => {
 }
 
 export default Avatar
+
+Avatar.propTypes = {
+	address: PropTypes.string,
+	ensImage: PropTypes.string,
+	size: PropTypes.number,
+}

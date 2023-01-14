@@ -1,5 +1,5 @@
 import NavBar from "./NavBar"
-import bg from "../public/bgLogoless.png"
+import bg from "public/bgLogoless.png"
 
 const Layout = ({ children }) => {
 	return (

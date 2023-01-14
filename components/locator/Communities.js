@@ -1,8 +1,8 @@
-import kkServer from "../../public/kkServer.png"
-import discordLogo from "../../public/discordLogo.png"
-import twitterLogo from "../../public/twitterLogo.png"
-import telegramLogo from "../../public/telegramLogo.png"
-import { COMMUNITIES } from "../../constants/communities"
+import kkServer from "public/icons/kkServer.png"
+import discordLogo from "public/icons/discordLogo.png"
+import twitterLogo from "public/icons/twitterLogo.png"
+import telegramLogo from "public/icons/telegramLogo.png"
+import { COMMUNITIES } from "constants/communities"
 
 const Communities = () => {
 	return (

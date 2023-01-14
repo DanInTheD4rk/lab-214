@@ -1,4 +1,4 @@
-import prisma from "../../prisma/prisma"
+import prisma from "prisma/prisma"
 import { unstable_getServerSession } from "next-auth/next"
 import { authOptions } from "../api/auth/[...nextauth]"
 

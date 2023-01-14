@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 import DiscordProvider from "next-auth/providers/discord"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import prisma from "../../../prisma/prisma"
+import prisma from "prisma/prisma"
 
 const scope = ["identify", "guilds", "guilds.members.read"].join(" ")
 const roles = ["1035583655772426320", "1035583944650924032", "892046947303714867"] // gen, baby, mutant

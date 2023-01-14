@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from "react"
 import PropTypes from "prop-types"
-import failedExperiment from "../../public/failedExperiment.gif"
-import abis from "../../constants/abisGoerli"
-import abisMainnet from "../../constants/abisMainnet"
+import failedExperiment from "public/extractor/failedExperiment.gif"
+import abis from "constants/abis"
 import { Contract, ethers } from "ethers"
 import { useContractEvent, useSigner } from "wagmi"
-import { ACTION_TYPES, MUTANT_TIERS } from "../../constants/extractor"
+import { ACTION_TYPES, MUTANT_TIERS } from "constants/extractor"
 import { useLoading } from "../LoadingContext"
 import { useModal } from "../ModalContext"
 import ManageModal from "./ManageModal"
@@ -18,9 +17,7 @@ const styles = {
 }
 
 const MUTANT_CONTRACT = process.env.NEXT_PUBLIC_MUTANT_CONTRACT
-const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
-const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
 
 const getTierColor = (tier) => {
 	// prettier-ignore
@@ -66,13 +63,17 @@ const MutantTile = ({ mutant, action }) => {
 			setLoading(false)
 		})
 
-		await factoryContract.createLab(mutant.tokenId).catch((error) => {
-			console.log(error)
-			setLoading(false)
-		})
-		actionButtonRef.current.disabled = true
-		actionButtonRef.current.innerText = "Creating..."
-		setLoading(false)
+		await factoryContract
+			.createLab(mutant.tokenId)
+			.then(() => {
+				actionButtonRef.current.disabled = true
+				actionButtonRef.current.innerText = "Creating..."
+				setLoading(false)
+			})
+			.catch((error) => {
+				console.log(error)
+				setLoading(false)
+			})
 	}
 
 	const stakeMutant = async () => {
@@ -204,6 +205,11 @@ const MutantTile = ({ mutant, action }) => {
 export default MutantTile
 
 MutantTile.propTypes = {
-	mutant: PropTypes.object,
+	mutant: PropTypes.shape({
+		tier: PropTypes.number,
+		tokenId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		labAddress: PropTypes.string,
+		rawMetadata: PropTypes.object,
+	}),
 	action: PropTypes.string,
 }

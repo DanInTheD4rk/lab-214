@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react"
 import "mapbox-gl/dist/mapbox-gl.css"
 import mapboxgl from "!mapbox-gl"
-import Profile from "../../components/appInfo/Profile"
+import Profile from "components/appInfo/Profile"
 import Map, { Marker, Popup } from "react-map-gl"
-import marker from "../../public/marker.png"
+import marker from "public/locator/marker.png"
 import { signIn, useSession } from "next-auth/react"
-import discordLogo from "../../public/discordLogo.png"
-import Communities from "../../components/locator/Communities"
-import TabBase from "../../components/TabBase"
+import discordLogo from "public/icons/discordLogo.png"
+import Communities from "components/locator/Communities"
+import TabBase from "components/TabBase"
 
 const styles = {
 	button:
@@ -17,7 +17,7 @@ const styles = {
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX
 const contributors = [<Profile user="DanInTheD4rk" />]
 
-const locator = () => {
+const Locator = () => {
 	const tabs = [
 		{
 			title: "Map",
@@ -189,4 +189,4 @@ const MapTab = () => {
 	)
 }
 
-export default locator
+export default Locator

@@ -6,8 +6,8 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import Link from "next/link"
 import Spinner from "./Spinner"
 import { useLoading } from "./LoadingContext"
-import logo from "../public/logoBordered.png"
-import Profile from "../components/appInfo/Profile"
+import logo from "public/icons/logoBordered.png"
+import Profile from "components/appInfo/Profile"
 import { useSession, signOut } from "next-auth/react"
 
 const navigation = [
@@ -40,7 +40,7 @@ export default function NavBar() {
 	return (
 		<>
 			{loading && <Spinner />}
-			<Disclosure as="nav" className="bg-black-800 z-50 inset-0 absolute w-full h-16">
+			<Disclosure as="nav" className="bg-black-800 z-20 inset-0 absolute w-full h-16">
 				{({ open }) => (
 					<>
 						<div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">

@@ -1,13 +1,13 @@
-import { useEffect, useState, useRef } from "react"
-import abis from "../../constants/abisGoerli"
-import abisMainnet from "../../constants/abisMainnet"
+import { useEffect, useState } from "react"
+import abis from "constants/abis"
 import { ethers } from "ethers"
-import { alchemy } from "../../utils/Alchemy"
+import { alchemy } from "utils/Alchemy"
 import MutantTile from "./MutantTile"
-import { useSigner, useContractEvent } from "wagmi"
-import { ACTION_TYPES } from "../../constants/extractor"
-import { checkIfZeroAddress } from "../../utils/utils"
+import { useSigner } from "wagmi"
+import { ACTION_TYPES } from "constants/extractor"
+import { checkIfZeroAddress } from "utils/utils"
 import { useNetwork } from "wagmi"
+import PropTypes from "prop-types"
 
 const styles = {
 	button:
@@ -21,6 +21,7 @@ const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
 const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
 const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
+const NETWORK = process.env.NEXT_PUBLIC_NETWORK
 
 const Staking = ({ provider: provider }) => {
 	const [mutantTiles, setMutantTiles] = useState(null)
@@ -110,10 +111,10 @@ const Staking = ({ provider: provider }) => {
 		setMutantTiles(tiles)
 	}, [ownedMutants])
 
-	if (chain && chain.network !== "goerli") {
+	if (chain && chain.network !== NETWORK) {
 		return (
 			<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
-				Coming soon... Please switch to Goerli to test application
+				Please switch to {NETWORK} to use this application
 			</div>
 		)
 	} else if (signer) {
@@ -139,38 +140,9 @@ const Staking = ({ provider: provider }) => {
 			)
 		} else {
 			return (
-				<>
-					<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
-						No Mutants available for staking
-					</div>
-					<div className="flex items-center justify-center bg-white p-3 bg-opacity-60 rounded-lg mt-2">
-						<div className="flex flex-col flex-wrap items-center justify-center text-xl font-bold w-1/2">
-							For testing on Goerli, use: <br />
-							<a
-								className="text-gray-700 hover:underline"
-								href={`https://goerli.etherscan.io/address/${MUTANT_CONTRACT}#code`}
-							>
-								Mutant contract
-							</a>
-							<br />
-							<a
-								className="text-gray-700 hover:underline"
-								href={`https://goerli.etherscan.io/address/${SCALES_CONTRACT}#code`}
-							>
-								$SCALES contract
-							</a>
-							<br />
-							<a
-								className="text-gray-700 hover:underline"
-								href={`https://goerli.etherscan.io/address/${RWASTE_CONTRACT}#code`}
-							>
-								$RWASTE contract
-							</a>
-							<br />
-							For more info contact DanInTheD4rk
-						</div>
-					</div>
-				</>
+				<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
+					No mutants available for staking
+				</div>
 			)
 		}
 	} else if (isError) {
@@ -189,3 +161,7 @@ const Staking = ({ provider: provider }) => {
 }
 
 export default Staking
+
+Staking.propTypes = {
+	provider: PropTypes.object,
+}

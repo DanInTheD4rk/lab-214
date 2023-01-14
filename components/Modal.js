@@ -1,6 +1,5 @@
-import { Fragment, useRef, useState } from "react"
+import { Fragment, useRef } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"
 import PropTypes from "prop-types"
 
 const defaultContents = {
@@ -8,14 +7,14 @@ const defaultContents = {
 	component: <></>,
 }
 
-const Modal = (props) => {
+const Modal = ({ open, setOpen, modalInfo }) => {
 	const cancelButtonRef = useRef(null)
-	const { title, component } = props.modalInfo || defaultContents
+	const { title, component } = modalInfo || defaultContents
 
-	if (props.modalInfo) {
+	if (modalInfo) {
 		return (
-			<Transition.Root show={props.open} as={Fragment}>
-				<Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={props.setOpen}>
+			<Transition.Root show={open} as={Fragment}>
+				<Dialog as="div" className="relative z-50" initialFocus={cancelButtonRef} onClose={setOpen}>
 					<Transition.Child
 						as={Fragment}
 						enter="ease-out duration-300"
@@ -28,7 +27,7 @@ const Modal = (props) => {
 						<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 					</Transition.Child>
 
-					<div className="fixed inset-0 z-10">
+					<div className="fixed inset-0 z-50">
 						<div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
 							<Transition.Child
 								as={Fragment}
@@ -49,7 +48,6 @@ const Modal = (props) => {
 								</Dialog.Panel>
 							</Transition.Child>
 						</div>
-						<div className="grow-3">test</div>
 					</div>
 				</Dialog>
 			</Transition.Root>

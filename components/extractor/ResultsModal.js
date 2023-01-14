@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
-import failedExperiment from "../../public/failedExperiment.gif"
+import failedExperiment from "public/extractor/failedExperiment.gif"
 import { useModal } from "../ModalContext"
+import PropTypes from "prop-types"
 
 const DNA_URI = process.env.NEXT_PUBLIC_DNA_URI
-const dnaImages = require.context("../../public/dna", true)
+const dnaImages = require.context("public/extractor", true)
 
 const actionButtonClass = `inline-flex font-bold w-full justify-center rounded-md border border-transparent bg-blue-700 hover:opacity-80 px-6 py-2.5 text-xs font-medium
 		text-white leading-tight uppercase shadow-sm sm:ml-3 sm:w-auto`
@@ -94,3 +95,11 @@ const ResultsModal = ({ results, transferDna }) => {
 }
 
 export default ResultsModal
+
+ResultsModal.propTypes = {
+	results: PropTypes.shape({
+		success: PropTypes.bool,
+		tokenId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	}),
+	transferDna: PropTypes.func,
+}

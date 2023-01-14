@@ -1,5 +1,6 @@
 import { useState } from "react"
 import AppInfo from "./appInfo/AppInfo"
+import PropTypes from "prop-types"
 
 const TabBase = ({ tabs: tabs, appInfo: { contributors, contracts, projectId } }) => {
 	const [openTab, setOpenTab] = useState(0)
@@ -9,7 +10,7 @@ const TabBase = ({ tabs: tabs, appInfo: { contributors, contracts, projectId } }
 
 	tabs.forEach((tab, idx) => {
 		tabTitles.push(
-			<li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+			<li key={idx} className="-mb-px mr-2 last:mr-0 flex-auto text-center">
 				<a
 					className={
 						"text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
@@ -28,7 +29,7 @@ const TabBase = ({ tabs: tabs, appInfo: { contributors, contracts, projectId } }
 			</li>
 		)
 		tabContent.push(
-			<div className={openTab === idx ? "block" : "hidden"} id={"link" + idx}>
+			<div key={idx} className={openTab === idx ? "block" : "hidden"} id={"link" + idx}>
 				{tab.content}
 			</div>
 		)
@@ -36,7 +37,7 @@ const TabBase = ({ tabs: tabs, appInfo: { contributors, contracts, projectId } }
 
 	return (
 		<div className="mx-10 my-20">
-			<AppInfo contributors={contributors} projectId={projectId} />
+			<AppInfo contributors={contributors} contracts={contracts} projectId={projectId} />
 
 			<div className="flex flex-wrap">
 				<div className="w-full">
@@ -56,3 +57,9 @@ const TabBase = ({ tabs: tabs, appInfo: { contributors, contracts, projectId } }
 }
 
 export default TabBase
+
+TabBase.propTypes = {
+	tabs: PropTypes.array,
+	contributors: PropTypes.array,
+	projectId: PropTypes.number,
+}
