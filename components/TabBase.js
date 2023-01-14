@@ -37,7 +37,7 @@ const TabBase = ({ tabs: tabs, appInfo: { contributors, contracts, projectId } }
 
 	return (
 		<div className="mx-10 my-20">
-			<AppInfo contributors={contributors} projectId={projectId} />
+			<AppInfo contributors={contributors} contracts={contracts} projectId={projectId} />
 
 			<div className="flex flex-wrap">
 				<div className="w-full">

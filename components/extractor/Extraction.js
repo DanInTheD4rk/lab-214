@@ -2,12 +2,13 @@ import { useEffect, useState } from "react"
 import ExtractTile from "./ExtractTile"
 import { checkIfZeroAddress } from "utils/utils"
 import { ethers } from "ethers"
-import abis from "constants/abisGoerli"
+import abis from "constants/abis"
 import { useNetwork } from "wagmi"
 import PropTypes from "prop-types"
 
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const FACTORY_CONTRACT = process.env.NEXT_PUBLIC_EXTRACTOR_LAB_FACTORY_CONTRACT
+const NETWORK = process.env.NEXT_PUBLIC_NETWORK
 
 const Extraction = ({ provider: provider }) => {
 	const [stakedMutants, setStakedMutants] = useState()
@@ -85,9 +86,9 @@ const Extraction = ({ provider: provider }) => {
 	if (mutantTiles && Object.keys(mutantTiles).length > 0) {
 		return (
 			<>
-				{chain && chain.network !== "goerli" && (
+				{chain && chain.network !== NETWORK && (
 					<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
-						Coming soon... Please switch to Goerli to test application
+						Please switch to {NETWORK === "goerli" ? NETWORK : "mainnet"} to use this application
 					</div>
 				)}
 				<div className="flex flex-row flex-wrap justify-center">{[...Object.values(mutantTiles)]}</div>
@@ -95,9 +96,16 @@ const Extraction = ({ provider: provider }) => {
 		)
 	} else if (mutantTiles) {
 		return (
-			<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
-				No mutants available for extraction
-			</div>
+			<>
+				{chain && chain.network !== NETWORK && (
+					<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg mb-2">
+						Please switch to {NETWORK === "goerli" ? NETWORK : "mainnet"} to use this application
+					</div>
+				)}
+				<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
+					No mutants available for extraction
+				</div>
+			</>
 		)
 	} else {
 		return null

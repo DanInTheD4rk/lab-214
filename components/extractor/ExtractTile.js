@@ -2,8 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react"
 import PropTypes from "prop-types"
 import failedExperiment from "public/extractor/failedExperiment.gif"
 import dnaTransfer from "public/extractor/dnaTransfer.gif"
-import abis from "constants/abisGoerli"
-import abisMainnet from "constants/abisMainnet"
+import abis from "constants/abis"
 import { Contract, ethers } from "ethers"
 import { useContractEvent, useSigner } from "wagmi"
 import { MUTANT_TIERS, BOOST_OPTIONS } from "constants/extractor"
@@ -22,6 +21,7 @@ const styles = {
 const DNA_CONTRACT = process.env.NEXT_PUBLIC_DNA_CONTRACT
 const SCALES_CONTRACT = process.env.NEXT_PUBLIC_SCALES_CONTRACT
 const RWASTE_CONTRACT = process.env.NEXT_PUBLIC_RWASTE_CONTRACT
+const NETWORK = process.env.NEXT_PUBLIC_NETWORK
 
 const getTierColor = (tier) => {
 	// prettier-ignore
@@ -171,7 +171,7 @@ const ExtractTile = ({ mutant: mutant }) => {
 						ref={actionButtonRef}
 						disabled={
 							((!signer || !mutant.canExtract) && signer && signer._address !== mutant.mutantOwner) ||
-							mutant.chain !== "goerli"
+							mutant.chain !== NETWORK
 						}
 						type="button"
 						className={`${styles.button} w-full disabled:opacity-50`}
