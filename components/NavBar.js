@@ -40,7 +40,7 @@ export default function NavBar() {
 	return (
 		<>
 			{loading && <Spinner />}
-			<Disclosure as="nav" className="bg-black-800 z-12 inset-0 absolute w-full h-16">
+			<Disclosure as="nav" className="bg-black-800 z-20 inset-0 absolute w-full h-16">
 				{({ open }) => (
 					<>
 						<div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
