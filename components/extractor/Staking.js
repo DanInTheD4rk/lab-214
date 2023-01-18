@@ -114,7 +114,7 @@ const Staking = ({ provider: provider }) => {
 	if (chain && chain.network !== NETWORK) {
 		return (
 			<div className="flex flex-row flex-wrap justify-center text-xl font-bold bg-white p-3 bg-opacity-60 rounded-lg">
-				Please switch to {NETWORK} to use this application
+				Please switch to {NETWORK === "goerli" ? NETWORK : "mainnet"} to use this application
 			</div>
 		)
 	} else if (signer) {

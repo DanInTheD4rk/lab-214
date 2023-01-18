@@ -39,7 +39,7 @@ export const COMMUNITIES = [
 		location: "New York City",
 		kaijuChannel: "",
 		twitter: "https://twitter.com/NYCKaijuKingz",
-		discord: "",
+		discord: "https://discord.gg/6Ap7UxUD",
 		telegram: "",
 	},
 	{ location: "Singapore", kaijuChannel: "", twitter: "https://twitter.com/KaijuKingzSG", discord: "", telegram: "" },
