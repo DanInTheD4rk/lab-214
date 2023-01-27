@@ -49,6 +49,24 @@ Run `openssl rand -base64 32` in terminal and set value to "SECRET_KEY_OPENSSL"
 
 ---
 
+These values are optional to set in .env but some functionality will be reduced
+
+<ul>
+<li>IMAGEKIT_PRIVATE</li>
+<li>IMAGEKIT_PUBLIC</li>
+<li>IMAGEKIT_URL</li>
+</ul>
+
+## ImageKit
+
+> Skipping setting these values will result in a placeholder image being used for markers in the locator lab
+
+Signup for free at https://imagekit.io/dashboard
+
+Use the url endpoint, public key, and private key values in the Developer options section of the dashboard
+
+---
+
 <br/>
 
 ## Local Database Setup
