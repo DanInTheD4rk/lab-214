@@ -102,9 +102,8 @@ const MapTab = () => {
 			headers: {
 				"Content-type": "application/json; charset=UTF-8",
 			},
-		})
-			.then(setLocations([...locations, body]))
-			.finally(setLoading(false))
+		}).then(setLocations([...locations, body]))
+		setLoading(false)
 	}
 
 	const removeLocation = () => {
