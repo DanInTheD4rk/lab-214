@@ -48,6 +48,7 @@ export default async (req, res) => {
 						{
 							file: req.body.imageUrl,
 							fileName: req.body.userId,
+							useUniqueFileName: false,
 						},
 						async (error, result) => {
 							if (error) {
