@@ -44,23 +44,27 @@ export default async (req, res) => {
 					console.error(err)
 				}
 				if (imagekit) {
-					imagekit.upload(
-						{
-							file: req.body.imageUrl,
-							fileName: req.body.userId,
-							useUniqueFileName: false,
-						},
-						async (error, result) => {
-							if (error) {
-								console.error(error)
-							} else {
-								data.imageUrl = result.url
+					await new Promise((resolve, reject) =>
+						imagekit.upload(
+							{
+								file: req.body.imageUrl,
+								fileName: req.body.userId,
+								useUniqueFileName: false,
+							},
+							async (error, result) => {
+								if (error) {
+									console.log(error)
+									reject()
+								}
+								resolve(result.url)
 							}
-							await prisma.location.create({
-								data: data,
-							})
-						}
-					)
+						)
+					).then(async (url) => {
+						data.imageUrl = url
+						await prisma.location.create({
+							data: data,
+						})
+					})
 				} else {
 					await prisma.location.create({
 						data: data,
