@@ -8,6 +8,7 @@ import { signIn, useSession } from "next-auth/react"
 import discordLogo from "public/icons/discordLogo.png"
 import Communities from "components/locator/Communities"
 import TabBase from "components/TabBase"
+import { useLoading } from "components/LoadingContext"
 
 const styles = {
 	button:
@@ -47,6 +48,7 @@ const MapTab = () => {
 	const [locations, setLocations] = useState([])
 	const [hasUserLocation, setHasUserLocation] = useState(false)
 	const [popupInfo, setPopupInfo] = useState()
+	const { setLoading: setLoading } = useLoading()
 
 	const markers = useMemo(
 		() =>
@@ -84,7 +86,7 @@ const MapTab = () => {
 		})()
 	}, [])
 
-	const saveLocation = () => {
+	const saveLocation = async () => {
 		const body = {
 			userId: session.user.id,
 			longitude: coordinates.longitude,
@@ -93,13 +95,15 @@ const MapTab = () => {
 			user: { name: session.user.name },
 		}
 
-		fetch("/api/location", {
+		setLoading(true)
+		await fetch("/api/location", {
 			method: "POST",
 			body: JSON.stringify(body),
 			headers: {
 				"Content-type": "application/json; charset=UTF-8",
 			},
 		}).then(setLocations([...locations, body]))
+		setLoading(false)
 	}
 
 	const removeLocation = () => {

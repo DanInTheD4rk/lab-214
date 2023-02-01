@@ -9,13 +9,15 @@ const Communities = () => {
 		<div className="text-white flex flex-row justify-center whitespace-nowrap">
 			<div>
 				{COMMUNITIES.map((com) => (
-					<div className="text-sm ml-2 mr-2 my-2">{com.location}:</div>
+					<div key={com.location} className="text-sm ml-2 mr-2 my-2">
+						{com.location}:
+					</div>
 				))}
 			</div>
 
 			<div className="mt-1">
 				{COMMUNITIES.map((com) => (
-					<div className="mr-2 my-[4px]">
+					<div key={com.location} className="mr-2 my-[4px]">
 						{com.kaijuChannel ? (
 							<a href={com.kaijuChannel}>
 								<img className="h-6 rounded-full" src={kkServer.src} />
@@ -29,7 +31,7 @@ const Communities = () => {
 
 			<div className="mt-1">
 				{COMMUNITIES.map((com) => (
-					<div className="mr-2 my-[4px]">
+					<div key={com.location} className="mr-2 my-[4px]">
 						{com.twitter ? (
 							<a href={com.twitter}>
 								<img className="h-6 rounded-full" src={twitterLogo.src} />
@@ -43,7 +45,7 @@ const Communities = () => {
 
 			<div className="items-center mt-1">
 				{COMMUNITIES.map((com) => (
-					<div className="mr-2 my-[4px]">
+					<div key={com.location} className="mr-2 my-[4px]">
 						{com.discord ? (
 							<a href={com.discord}>
 								<img className="h-6 rounded-full" src={discordLogo.src} />
@@ -57,7 +59,7 @@ const Communities = () => {
 
 			<div className="items-center mt-1">
 				{COMMUNITIES.map((com) => (
-					<div className="my-[4px]">
+					<div key={com.location} className="my-[4px]">
 						{com.telegram ? (
 							<a href={com.telegram}>
 								<img className="h-6 rounded-full" src={telegramLogo.src} />

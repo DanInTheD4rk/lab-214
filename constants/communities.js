@@ -29,6 +29,13 @@ export const COMMUNITIES = [
 	},
 	{ location: "Hong Kong", kaijuChannel: "", twitter: "https://twitter.com/KaijuUnionHK", discord: "", telegram: "" },
 	{
+		location: "London/UK",
+		kaijuChannel: "https://discord.com/channels/890466570575429703/1022918516824887318",
+		twitter: "https://twitter.com/KaijuLondon",
+		discord: "",
+		telegram: "",
+	},
+	{
 		location: "Malaysia",
 		kaijuChannel: "",
 		twitter: "https://twitter.com/KaijuKingzMY",
@@ -53,13 +60,6 @@ export const COMMUNITIES = [
 	{
 		location: "Toronto",
 		kaijuChannel: "https://discord.com/channels/890466570575429703/1042999735247708180",
-		twitter: "",
-		discord: "",
-		telegram: "",
-	},
-	{
-		location: "United Kingdom",
-		kaijuChannel: "https://discord.com/channels/890466570575429703/1022918516824887318",
 		twitter: "",
 		discord: "",
 		telegram: "",

@@ -16,7 +16,7 @@ export const PROJECTS = {
 		type: "external",
 		preview: "kaijuKingzSanta",
 		description:
-			"Fuze your Gen Kaiju with Kaiju Santa to create fuzed DNA! This DNA can be mutated to create a baby Kaiju for use throughout the Kaiju Kingz ecosystem. Requires 750 $RWASTE and permission to transfer your selected KAIJU token temporarily.",
+			"Babies have been minted out! Tool here for historical purposes only. Fuze your Gen Kaiju with Kaiju Santa to create fuzed DNA! This DNA can be mutated to create a baby Kaiju for use throughout the Kaiju Kingz ecosystem. Requires 750 $RWASTE and permission to transfer your selected KAIJU token temporarily.",
 		contributorIds: [2],
 		auditorIds: [],
 		url: "https://kaijukingzsanta.netlify.app/#/",
